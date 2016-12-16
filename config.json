@@ -1,0 +1,14 @@
+{
+  "gpu_mem": {
+    "type": "int",
+    "value": ""
+  },
+  "autostart": {
+    "type": "boolean",
+    "value": true
+  },
+ "hdmihotplug": {
+    "type": "boolean",
+    "value": true
+  }
+}
