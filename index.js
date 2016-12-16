@@ -115,6 +115,51 @@ ControllerKodi.prototype.setConf = function(varName, varValue) {
 
 // Public Methods ---------------------------------------------------------------------------------------
 
+controllerkodi.prototype.updateBootConfig = function (data) {
+	var self = this;
+
+	var defer = libq.defer();
+
+	self.config.set('gpu_mem', data['gpu_mem']);
+	self.config.set('autostart', data['autostart']);
+	self.config.set('hdmihotplug', data['hdmihotplug']);
+	self.writeBootConfig()
+	.then(function(e){
+	self.commandrouter.pushtoastmessage('success', "Configuration update", 'Successfully wrote the settings to /boot/config.txt');
+	defer.resolve({});
+	})
+	.fail(function(e)
+	{
+	defer.reject(new error());
+	})
+
+
+	return defer.promise;
+
+};
+
+controllerKodi.prototype.writeBootConfig = function () {
+	var self=this;
+	var defer=libQ.defer();
+	self.
+	console.log('Trying to write /boot/config.txt')
+	.then(function(e)
+	{
+	var edefer=libQ.defer();
+	exec("/usr/bin/sudo /bin/sed -i -- 's/gpu_mem=/#gpu_mem=/g' /boot/config.txt & echo 'gpu_mem=248' | sudo tee -a /boot/config.txt",{uid:1000,gid:1000}, function (error, stdout, stderr) {
+	edefer.resolve();
+	});
+	return edefer.promise;
+	})
+	.then(function(e)
+	{
+	self.commandRouter.pushToastMessage('success', "Configuration update", 'A reboot is required, changes have been made to /boot/config.txt');
+	defer.resolve({});
+	});
+
+	return defer.promise;
+}
+
 // ControllerKodi.prototype.createVOLSPOTCONNECTFile = function () {
     // var self = this;
 
