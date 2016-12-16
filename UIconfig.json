@@ -1,0 +1,55 @@
+{
+  "page": {
+    "label": "TRANSLATE.VOLSPOTCONNECT.VOLSPOTCONNECTCONF"
+  },
+  "sections": [ 
+   {
+      "id": "section_account",
+      "element": "section",
+      "label": "TRANSLATE.VOLSPOTCONNECT.VOLSPOTCONNECTACCOUNT",
+      "icon": "fa-plug",
+      "onSave": {"type":"controller", "endpoint":"music_service/volspotconnect", "method":"saveVolspotconnectAccount"},
+      "saveButton": {
+        "label": "TRANSLATE.VOLSPOTCONNECT.SAVE",
+        "data": [
+          "username",
+          "password",
+          "bitrate",
+          "familyshare"
+        ]
+      },
+      "content": [
+        {
+          "id": "username",
+          "type":"text",
+          "element": "input",
+          "doc": "This is the username of your Spotify account",
+          "label": "TRANSLATE.VOLSPOTCONNECT.USERNAME",
+          "value": ""
+        },
+        {
+          "id": "password",
+          "type":"password",
+          "element": "input",
+          "doc": "This is the password of your Spotify account",
+          "label": "TRANSLATE.VOLSPOTCONNECT.PASSWORD",
+          "value": ""
+        },
+	{
+          "id":"bitrate",
+          "element": "switch",
+          "doc": "High bitrate",
+          "label": "TRANSLATE.VOLSPOTCONNECT.HIGHBITRATE",
+          "value": true
+        },
+        {
+          "id":"familyshare",
+          "element": "switch",
+          "doc": "Family shared device",
+          "label": "TRANSLATE.VOLSPOTCONNECT.FAMILYSHARE",
+          "value": true
+        }
+      ]
+   }
+  ]
+}
