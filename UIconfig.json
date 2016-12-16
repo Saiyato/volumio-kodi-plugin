@@ -1,52 +1,43 @@
 {
   "page": {
-    "label": "TRANSLATE.VOLSPOTCONNECT.VOLSPOTCONNECTCONF"
+    "label": "TRANSLATE.KODI.KODICONF"
   },
   "sections": [ 
    {
       "id": "section_account",
       "element": "section",
-      "label": "TRANSLATE.VOLSPOTCONNECT.VOLSPOTCONNECTACCOUNT",
-      "icon": "fa-plug",
-      "onSave": {"type":"controller", "endpoint":"music_service/volspotconnect", "method":"saveVolspotconnectAccount"},
+      "label": "TRANSLATE.KODI.KODITITLE",
+      "icon": "fa-cogs",
+      //"onSave": {"type":"controller", "endpoint":"miscellaneous/kodi", "method":"saveVolspotconnectAccount"},
       "saveButton": {
-        "label": "TRANSLATE.VOLSPOTCONNECT.SAVE",
+        "label": "TRANSLATE.KODI.SAVE",
         "data": [
-          "username",
-          "password",
-          "bitrate",
-          "familyshare"
+          "gpu_mem",
+          "autostart",
+          "hdmihotplug"
         ]
       },
       "content": [
         {
-          "id": "username",
+          "id": "gpu_mem",
           "type":"text",
           "element": "input",
-          "doc": "This is the username of your Spotify account",
-          "label": "TRANSLATE.VOLSPOTCONNECT.USERNAME",
+          "doc": "This is the amount of memory reserved for the GPU",
+          "label": "TRANSLATE.KODI.GPUMEM",
           "value": ""
         },
         {
-          "id": "password",
-          "type":"password",
-          "element": "input",
-          "doc": "This is the password of your Spotify account",
-          "label": "TRANSLATE.VOLSPOTCONNECT.PASSWORD",
-          "value": ""
+          "id": "autostart",
+          "element": "switch",
+          "doc": "Determined whether Kodi should start after boot",
+          "label": "TRANSLATE.KODI.AUTOSTART",
+          "value": "true"
         },
 	{
-          "id":"bitrate",
+          "id":"hdmihotplug",
           "element": "switch",
-          "doc": "High bitrate",
-          "label": "TRANSLATE.VOLSPOTCONNECT.HIGHBITRATE",
-          "value": true
-        },
-        {
-          "id":"familyshare",
-          "element": "switch",
-          "doc": "Family shared device",
-          "label": "TRANSLATE.VOLSPOTCONNECT.FAMILYSHARE",
+          "doc": "Determines whether HDMI should be considered hotplug",
+          "label": "TRANSLATE.KODI.HDMIHOTPLUG",
           "value": true
         }
       ]
