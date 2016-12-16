@@ -1,0 +1,10 @@
+{
+	"KODI":{
+	"KODICONF":"Kodi opstartinstellingen",
+	"VOLSPOTCONNECTACCOUNT":"Opstartinstellingen",
+	"GPUMEM":"Geheugen gereserveerd voor GPU",
+	"AUTOSTART":"Start automatisch",	
+	"HDMIHOTPLUG":"HDMI hotplug mogelijkheid inschakelen",
+	"SAVE":"Opslaan"
+	}
+}
