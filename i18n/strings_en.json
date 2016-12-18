@@ -1,7 +1,7 @@
 {
 	"KODI":{
 	"KODICONF":"Kodi boot configuration",
-	"VOLSPOTCONNECTACCOUNT":"Boot settings",
+	"BOOTSETTINGS":"Boot settings",
 	"GPUMEM":"Memory reserved for GPU",
 	"AUTOSTART":"Autostart on boot",	
 	"HDMIHOTPLUG":"Set HDMI to hotplug",
