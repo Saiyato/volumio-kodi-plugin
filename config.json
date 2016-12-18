@@ -1,7 +1,7 @@
 {
   "gpu_mem": {
-    "type": "int",
-    "value": 248
+    "type": "string",
+    "value": "248"
   },
   "autostart": {
     "type": "boolean",
