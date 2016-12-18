@@ -11,7 +11,7 @@
   "volumio_info": {
     "prettyName": "Kodi",
     "icon": "fa fa-tv",
-    "plugin_type": "miscellaneous"
+    "plugin_type": "miscelleanea"
   },
   "dependencies": {
         "fs-extra": "^0.28.0",
