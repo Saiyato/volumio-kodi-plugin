@@ -8,7 +8,7 @@
       "element": "section",
       "label": "TRANSLATE.KODI.KODITITLE",
       "icon": "fa-cogs",
-      "onSave": {"type":"controller", "endpoint":"miscellaneous/kodi", "method":"updateBootConfig"},
+      "onSave": {"type":"controller", "endpoint":"miscelleanea/kodi", "method":"updateBootConfig"},
       "saveButton": {
         "label": "TRANSLATE.KODI.SAVE",
         "data": [
