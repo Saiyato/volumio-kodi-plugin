@@ -1,7 +1,7 @@
 {
 	"KODI":{
 	"KODICONF":"Kodi opstartinstellingen",
-	"BOOTSETTINGS":"Opstartinstellingen",
+	"KODITITLE":"Opstartinstellingen",
 	"GPUMEM":"Geheugen gereserveerd voor GPU",
 	"AUTOSTART":"Start automatisch",	
 	"HDMIHOTPLUG":"HDMI hotplug mogelijkheid inschakelen",
