@@ -4,7 +4,7 @@
   },
   "sections": [ 
    {
-      "id": "section_account",
+      "id": "section_bootconf",
       "element": "section",
       "label": "TRANSLATE.KODI.KODITITLE",
       "icon": "fa-cogs",
