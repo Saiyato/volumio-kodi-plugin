@@ -74,7 +74,7 @@ ControllerKodi.prototype.onStart = function() {
 
 // Volspotconnect stop
 ControllerKodi.prototype.stop = function() {
-
+	return libQ.resolve();
 };
 
 
