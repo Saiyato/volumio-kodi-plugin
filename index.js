@@ -47,11 +47,29 @@ ControllerKodi.prototype.onPlayerNameChanged = function (playerName) {
 
 // Plugin methods -----------------------------------------------------------------------------
 ControllerKodi.prototype.onStop = function() {
+	var self = this;
 
+	self.logger.info("Killing Kodi");	
+
+   	return libQ.resolve();
 };
 
 ControllerKodi.prototype.onStart = function() {
+	var self = this;
 
+    	var defer=libQ.defer();
+
+  	self.startVolspotconnectDaemon()
+        .then(function(e)
+        {
+            self.logger.info("Kodi started");
+        })
+        .fail(function(e)
+        {
+            defer.reject(new Error());
+        });
+
+   	return defer.promise;
 };
 
 // Volspotconnect stop
@@ -74,29 +92,28 @@ ControllerKodi.prototype.onUninstall = function() {
 
 };
 
-// ControllerKodi.prototype.getUIConfig = function() {
-	// var defer = libQ.defer();
-	// var self = this;
-	// var lang_code = this.commandRouter.sharedVars.get('language_code');
+ControllerKodi.prototype.getUIConfig = function() {
+    var defer = libQ.defer();
+    var self = this;
+    var lang_code = this.commandRouter.sharedVars.get('language_code');
 
-        // self.commandRouter.i18nJson(__dirname+'/i18n/strings_'+lang_code+'.json',
-                // __dirname+'/i18n/strings_en.json',
-                // __dirname + '/UIConfig.json')
-        // .then(function(uiconf)
-        // {
-			// uiconf.sections[0].content[0].value = self.config.get('username');
-			// uiconf.sections[0].content[1].value = self.config.get('password');
-			// uiconf.sections[0].content[2].value = self.config.get('bitrate');
-			// uiconf.sections[0].content[3].value = self.config.get('familyshare');
-            // defer.resolve(uiconf);
-            // })
-                // .fail(function()
-            // {
-                // defer.reject(new Error());
-        // });
+    self.commandRouter.i18nJson(__dirname+'/i18n/strings_'+lang_code+'.json',
+    __dirname+'/i18n/strings_en.json',
+    __dirname + '/UIConfig.json')
+    .then(function(uiconf)
+    {
+        uiconf.sections[0].content[0].value = self.config.get('gpu_mem');
+        uiconf.sections[0].content[1].value = self.config.get('autostart');
+        uiconf.sections[0].content[2].value = self.config.get('hdmihotplug');
+        defer.resolve(uiconf);
+    })
+    .fail(function()
+    {
+        defer.reject(new Error());
+    });
 
-        // return defer.promise;
-// };
+    return defer.promise;
+};
 
 ControllerKodi.prototype.setUIConfig = function(data) {
 	var self = this;
