@@ -32,21 +32,13 @@ ControllerKodi.prototype.onVolumioStart = function()
 	// this.config = new (require('v-conf'))();
 	// this.config.loadFile(configFile);
 	    		// self.createVOLSPOTCONNECTFile();
-	// return libQ.resolve();	
+	return libQ.resolve();	
 }
 
 ControllerKodi.prototype.getConfigurationFiles = function()
 {
 	return ['config.json'];
 };
-ControllerKodi.prototype.onPlayerNameChanged = function (playerName) 
-{
-	var self = this;
-
-	self.onRestart();
-};
-
-
 
 // Plugin methods -----------------------------------------------------------------------------
 ControllerKodi.prototype.onStop = function() {
