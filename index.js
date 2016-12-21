@@ -10,8 +10,8 @@ var exec = require('child_process').exec;
 // Define the ControllerKodi class
 module.exports = ControllerKodi;
 
-function ControllerKodi(context) {
-
+function ControllerKodi(context) 
+{
 	var self = this;
 
 	this.context = context;
@@ -25,19 +25,22 @@ function ControllerKodi(context) {
 
 ControllerKodi.prototype.onVolumioStart = function()
 {
-	// var self= this;
+	var self = this;
+	self.logger.info("Kodi started");
+	
 	// var configFile=this.commandRouter.pluginManager.getConfigurationFile(this.context,'config.json');
 	// this.config = new (require('v-conf'))();
 	// this.config.loadFile(configFile);
 	    		// self.createVOLSPOTCONNECTFile();
-	// return libQ.resolve();
+	// return libQ.resolve();	
 }
 
 ControllerKodi.prototype.getConfigurationFiles = function()
 {
 	return ['config.json'];
 };
-ControllerKodi.prototype.onPlayerNameChanged = function (playerName) {
+ControllerKodi.prototype.onPlayerNameChanged = function (playerName) 
+{
 	var self = this;
 
 	self.onRestart();
@@ -56,10 +59,9 @@ ControllerKodi.prototype.onStop = function() {
 
 ControllerKodi.prototype.onStart = function() {
 	var self = this;
-
     	var defer=libQ.defer();
 
-  	self.startVolspotconnectDaemon()
+  	self.checkKodiProcess()
         .then(function(e)
         {
             self.logger.info("Kodi started");
@@ -72,24 +74,28 @@ ControllerKodi.prototype.onStart = function() {
    	return defer.promise;
 };
 
-// Volspotconnect stop
-ControllerKodi.prototype.stop = function() {
+ControllerKodi.prototype.stop = function() 
+{
+	// Kill process?
 	return libQ.resolve();
 };
 
 
-ControllerKodi.prototype.onRestart = function() {
+ControllerKodi.prototype.onRestart = function() 
+{
+	// Do nothing
 	var self = this;
-	//
 };
 
-ControllerKodi.prototype.onInstall = function() {
+ControllerKodi.prototype.onInstall = function() 
+{
 	var self = this;
 	//Perform your installation tasks here
 };
 
-ControllerKodi.prototype.onUninstall = function() {
-
+ControllerKodi.prototype.onUninstall = function() 
+{
+	// Uninstall.sh?
 };
 
 ControllerKodi.prototype.getUIConfig = function() {
@@ -132,7 +138,14 @@ ControllerKodi.prototype.setConf = function(varName, varValue) {
 
 // Public Methods ---------------------------------------------------------------------------------------
 
-controllerkodi.prototype.updateBootConfig = function (data) {
+ControllerKodi.prototype.checkKodiProcess = function()
+{
+	// Apply valid check
+	return libQ.resolve();
+}
+
+ControllerKodi.prototype.updateBootConfig = function (data) 
+{
 	var self = this;
 
 	var defer = libq.defer();
@@ -140,38 +153,38 @@ controllerkodi.prototype.updateBootConfig = function (data) {
 	self.config.set('gpu_mem', data['gpu_mem']);
 	self.config.set('autostart', data['autostart']);
 	self.config.set('hdmihotplug', data['hdmihotplug']);
+	
 	self.writeBootConfig()
 	.then(function(e){
-	self.commandrouter.pushtoastmessage('success', "Configuration update", 'Successfully wrote the settings to /boot/config.txt');
+		self.commandrouter.pushtoastmessage('success', "Configuration update", 'Successfully wrote the settings to /boot/config.txt');
 	defer.resolve({});
 	})
 	.fail(function(e)
 	{
-	defer.reject(new error());
+		defer.reject(new error());
 	})
 
 
 	return defer.promise;
-
 };
 
-controllerKodi.prototype.writeBootConfig = function () {
-	var self=this;
-	var defer=libQ.defer();
-	self.
-	console.log('Trying to write /boot/config.txt')
+ControllerKodi.prototype.writeBootConfig = function () 
+{
+	var self = this;
+	var defer = libQ.defer();
+	self.console.log('Trying to write /boot/config.txt')
 	.then(function(e)
 	{
-	var edefer=libQ.defer();
-	exec("/usr/bin/sudo /bin/sed -i -- 's/gpu_mem=/#gpu_mem=/g' /boot/config.txt & echo 'gpu_mem=248' | sudo tee -a /boot/config.txt",{uid:1000,gid:1000}, function (error, stdout, stderr) {
-	edefer.resolve();
+		var edefer = libQ.defer();
+		exec("/usr/bin/sudo /bin/sed -i -- 's/gpu_mem=/#gpu_mem=/g' /boot/config.txt & echo 'gpu_mem=248' | sudo tee -a /boot/config.txt",{uid:1000,gid:1000}, function (error, stdout, stderr) {
+		edefer.resolve();
 	});
-	return edefer.promise;
+		return edefer.promise;
 	})
 	.then(function(e)
 	{
-	self.commandRouter.pushToastMessage('success', "Configuration update", 'A reboot is required, changes have been made to /boot/config.txt');
-	defer.resolve({});
+		self.commandRouter.pushToastMessage('success', "Configuration update", 'A reboot is required, changes have been made to /boot/config.txt');
+		defer.resolve({});
 	});
 
 	return defer.promise;
