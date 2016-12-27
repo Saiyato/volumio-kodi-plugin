@@ -1,6 +1,6 @@
 {
   "name": "Kodi",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "description": "Kodi installation script",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
   "volumio_info": {
     "prettyName": "Kodi",
     "icon": "fa fa-tv",
-    "plugin_type": "miscelleanea"
+    "plugin_type": "miscellanea"
   },
   "dependencies": {
         "fs-extra": "^0.28.0",
