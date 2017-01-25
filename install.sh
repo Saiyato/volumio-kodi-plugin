@@ -6,6 +6,8 @@ cpu=$(lscpu | awk 'FNR == 1 {print $2}')
 
 echo "deb http://archive.mene.za.net/raspbian jessie contrib" | sudo tee -a /etc/apt/sources.list
 apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED
+
+
 if [ $? -eq 0 ]
 then
 	
@@ -49,7 +51,7 @@ then
 
 	# Configure Kodi auto-launch
 	echo "Enabling auto-launch for Kodi"
-	KODICONFIG="/etc/default/kodi"
+	KODICONFIG = "/etc/default/kodi"
 	if grep -q "ENABLED=0" $KODICONFIG; 
 	then
 		sed -i -- 's/ENABLED=0/ENABLED=1/g' $KODICONFIG
@@ -75,19 +77,14 @@ then
 	echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
 	ldconfig
 
-	# Update the gpu_mem parameter
-	echo "Updating GPU memory to 248MB"
+	# Update the boot config
 	CONFIG="/boot/config.txt"
-	if grep -q gpu_mem=16 $CONFIG; 
-	then
-	   sed -i -- 's/gpu_mem=16/gpu_mem=248/g' $CONFIG
-	else
-		sed -i -- 's/gpu_mem=/#gpu_mem=/g' $CONFIG
-		echo "gpu_mem=248" | sudo tee -a $CONFIG
-	fi
-
+	
+	echo "Updating GPU memory to 248MB..."	
+	sed -i -- 's|.*gpu_mem.*|gpu_mem=248|g' $CONFIG
+	
 	echo "Setting HDMI to hotplug..."
-	echo "hdmi_force_hotplug=1" | sudo tee -a /boot/config.txt
+	echo "hdmi_force_hotplug=1" | sudo tee -a $CONFIG 
 	
 else
 	echo "Could not add repository, cancelling installation."
