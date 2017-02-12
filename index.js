@@ -122,7 +122,7 @@ ControllerKodi.prototype.getUIConfig = function() {
     .then(function(uiconf)
     {
         uiconf.sections[0].content[0].value = self.config.get('gpu_mem');
-        uiconf.sections[0].content[2].value = self.config.get('hdmihotplug');
+        uiconf.sections[0].content[1].value = self.config.get('hdmihotplug');
         defer.resolve(uiconf);
     })
     .fail(function()

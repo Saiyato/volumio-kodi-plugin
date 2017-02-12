@@ -13,7 +13,6 @@
         "label": "TRANSLATE.KODI.SAVE",
         "data": [
           "gpu_mem",
-          "autostart",
           "hdmihotplug"
         ]
       },
