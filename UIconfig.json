@@ -24,16 +24,9 @@
           "element": "input",
           "doc": "This is the amount of memory reserved for the GPU",
           "label": "TRANSLATE.KODI.GPUMEM",
-          "value": "250"
+          "value": "248"
         },
-        {
-          "id": "autostart",
-          "element": "switch",
-          "doc": "Determined whether Kodi should start after boot",
-          "label": "TRANSLATE.KODI.AUTOSTART",
-          "value": true
-        },
-	{
+		{
           "id":"hdmihotplug",
           "element": "switch",
           "doc": "Determines whether HDMI should be considered hotplug",

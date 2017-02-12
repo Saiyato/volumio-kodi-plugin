@@ -4,10 +4,14 @@ echo "Installing Kodi and its dependencies..."
 echo "Detecting cpu"
 cpu=$(lscpu | awk 'FNR == 1 {print $2}')
 
-echo "deb http://archive.mene.za.net/raspbian jessie contrib" | sudo tee -a /etc/apt/sources.list
-apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED
+# Only add the repo if it doesn't already exist
+if ! grep -q "mene.za.net" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
+then
+	echo "deb http://archive.mene.za.net/raspbian jessie contrib" | sudo tee -a /etc/apt/sources.list
+	apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED
+fi
 
-
+# Continue installation
 if [ $? -eq 0 ]
 then
 	
@@ -41,29 +45,15 @@ then
 	#adduser kodi
 	usermod -aG audio,video,input,dialout,plugdev,tty kodi
 
-	# Enable auto-login
-	echo "Enabling auto-login for user volumio"
-	INITTAB="/etc/inittab"
-	if grep -q "1:2345:respawn:/sbin/getty 38400 tty1" $INITTAB; 
-	then
-	   sed -i -- 's#1:2345:respawn:/sbin/getty 38400 tty1#1:2345:respawn:/sbin/getty --autologin volumio --noclear 38400 tty1#g' $INITTAB
-	fi
-
-	# Configure Kodi auto-launch
-	echo "Enabling auto-launch for Kodi"
-	KODICONFIG = "/etc/default/kodi"
-	if grep -q "ENABLED=0" $KODICONFIG; 
-	then
-		sed -i -- 's/ENABLED=0/ENABLED=1/g' $KODICONFIG
-	fi
-
 	# Add input rules
 	echo "Adding input rules"
+	rm /etc/udev/rules.d/99-input.rules
 	echo "SUBSYSTEM==\"input\", GROUP=\"input\", MODE=\"0660\"
 	KERNEL==\"tty[0-9]*\", GROUP=\"tty\", MODE=\"0660\"" | sudo tee -a /etc/udev/rules.d/99-input.rules
 
 	# Add input permissions
 	echo "Adding input permissions"
+	rm /etc/udev/rules.d/10-permissions.rules
 	echo "# input
 	KERNEL==\"mouse*|mice|event*\",   MODE=\"0660\", GROUP=\"input\"
 	KERNEL==\"ts[0-9]*|uinput\",     MODE=\"0660\", GROUP=\"input\"
@@ -74,6 +64,7 @@ then
 	SUBSYSTEM==\"vchiq\",  GROUP=\"video\", MODE=\"0660\"" | sudo tee -a /etc/udev/rules.d/10-permissions.rules
 
 	# Map the EGL libraries
+	rm /etc/ld.so.conf.d/00-vmcs.conf
 	echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
 	ldconfig
 
@@ -85,6 +76,31 @@ then
 	
 	echo "Setting HDMI to hotplug..."
 	echo "hdmi_force_hotplug=1" | sudo tee -a $CONFIG 
+	
+	# Add the systemd unit
+	rm /etc/systemd/system/kodi.service	
+	echo "[Unit]
+	Description = Kodi Media Center
+
+	# if you don't need the MySQL DB backend, this should be sufficient
+	After = systemd-user-sessions.service network.target sound.target
+
+	# if you need the MySQL DB backend, use this block instead of the previous
+	#After = systemd-user-sessions.service network.target sound.target mysql.service
+	#Wants = mysql.service
+
+	[Service]
+	User = kodi
+	#Group = root
+	Type = simple
+	#PAMName = login # you might want to try this one, did not work on all systems
+	ExecStart = /usr/bin/kodi-standalone -- :0 -nolisten tcp vt7
+	Restart = on-abort
+	RestartSec = 5
+
+	[Install]
+	WantedBy = multi-user.target" | sudo tee -a /etc/systemd/system/kodi.service
+	echo "Added the systemd unit"
 	
 else
 	echo "Could not add repository, cancelling installation."

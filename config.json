@@ -3,10 +3,6 @@
     "type": "string",
     "value": "248"
   },
-  "autostart": {
-    "type": "boolean",
-    "value": true
-  },
  "hdmihotplug": {
     "type": "boolean",
     "value": true

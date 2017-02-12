@@ -45,31 +45,46 @@ ControllerKodi.prototype.getConfigurationFiles = function()
 ControllerKodi.prototype.onStop = function() {
 	var self = this;
 
-	self.logger.info("Killing Kodi");	
+	var defer=libQ.defer();
 
-   	return libQ.resolve();
+	exec("/usr/bin/sudo /bin/systemctl stop kodi.service", {uid:1000,gid:1000}, function (error, stdout, stderr) {
+		if (error !== null) {
+			self.commandRouter.pushConsoleMessage('The following error occurred while stopping KODI: ' + error);
+			defer.reject();
+		}
+		else {
+			self.commandRouter.pushConsoleMessage('KODI killed');
+			defer.resolve();
+		}
+	});
+
+	return defer.promise;
 };
 
 ControllerKodi.prototype.onStart = function() {
 	var self = this;
-    	var defer=libQ.defer();
 
-  	self.checkKodiProcess()
-        .then(function(e)
-        {
-            self.logger.info("Kodi plug-in started");
-        })
-        .fail(function(e)
-        {
-            defer.reject(new Error());
-        });
+	var defer=libQ.defer();
 
-   	return defer.promise;
+	exec("/usr/bin/sudo /bin/systemctl start kodi.service", {uid:1000,gid:1000}, function (error, stdout, stderr) {
+		if (error !== null) {
+			self.commandRouter.pushConsoleMessage('The following error occurred while starting KODI: ' + error);
+			defer.reject();
+		}
+		else {
+			self.commandRouter.pushConsoleMessage('KODI started');
+			defer.resolve();
+		}
+	});
+
+	return defer.promise;
 };
 
 ControllerKodi.prototype.stop = function() 
 {
 	// Kill process?
+	self.logger.info("performing stop action");	
+	
 	return libQ.resolve();
 };
 
@@ -77,6 +92,8 @@ ControllerKodi.prototype.stop = function()
 ControllerKodi.prototype.onRestart = function() 
 {
 	// Do nothing
+	self.logger.info("performing onRestart action");	
+	
 	var self = this;
 };
 
@@ -105,7 +122,6 @@ ControllerKodi.prototype.getUIConfig = function() {
     .then(function(uiconf)
     {
         uiconf.sections[0].content[0].value = self.config.get('gpu_mem');
-        uiconf.sections[0].content[1].value = self.config.get('autostart');
         uiconf.sections[0].content[2].value = self.config.get('hdmihotplug');
         defer.resolve(uiconf);
     })
@@ -147,20 +163,12 @@ ControllerKodi.prototype.setConf = function(conf) {
 
 // Public Methods ---------------------------------------------------------------------------------------
 
-ControllerKodi.prototype.checkKodiProcess = function()
-{
-	this.updateConfigFile("ENABLED", this.config.get('autostart'), '/etc/default/kodi');
-	// Apply valid check
-	return libQ.resolve();
-}
-
 ControllerKodi.prototype.updateBootConfig = function (data) 
 {
 	var self = this;
 	var defer = libQ.defer();
 
 	self.config.set('gpu_mem', data['gpu_mem']);
-	self.config.set('autostart', data['autostart']);
 	self.config.set('hdmihotplug', data['hdmihotplug']);
 	self.logger.info("Successfully updated configuration");
 	
@@ -185,14 +193,7 @@ ControllerKodi.prototype.writeBootConfig = function (config)
 	self.updateConfigFile("gpu_mem", self.config.get('gpu_mem'), "/boot/config.txt")
 	.then(function (hdmi) {
 		self.updateConfigFile("hdmi_force_hotplug", self.config.get('hdmihotplug'), "/boot/config.txt");
-	})	
-	.then(function(kodi){
-		self.updateConfigFile("ENABLED", self.config.get('autostart'), '/etc/default/kodi');
 	})
-	.then(function(kodiNew){
-		// If for some reason Kodi installation was interrupted a different kodi config file is written
-		self.updateConfigFile("ENABLED", self.config.get('autostart'), '/etc/default/kodi.dpkg-new');
-	})	
 	.fail(function(e)
 	{
 		defer.reject(new Error());
