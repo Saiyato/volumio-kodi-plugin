@@ -77,6 +77,12 @@ then
 	echo "Setting HDMI to hotplug..."
 	echo "hdmi_force_hotplug=1" | sudo tee -a $CONFIG 
 	
+	# Create the ALSA override file
+	echo "Creating ALSA override"
+	rm /etc/udev/rules.d/99-input.rules
+	echo "defaults.ctl.card 0
+	defaults.pcm.card 0" | sudo tee -a /etc/asound.conf
+	
 	# Add the systemd unit
 	rm /etc/systemd/system/kodi.service	
 	echo "[Unit]

@@ -3,8 +3,9 @@
 	"KODICONF":"Kodi boot configuration",
 	"KODITITLE":"Boot settings",
 	"GPUMEM":"Memory reserved for GPU",
-	"AUTOSTART":"Autostart on boot",	
 	"HDMIHOTPLUG":"Set HDMI to hotplug",
+	"USEDAC":"Enable DAC output for Kodi",
+	"KALIDELAY":"Configure Kali sound delay for Kodi",
 	"SAVE":"Save"
 	}
 }

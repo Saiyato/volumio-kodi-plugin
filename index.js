@@ -123,6 +123,8 @@ ControllerKodi.prototype.getUIConfig = function() {
     {
         uiconf.sections[0].content[0].value = self.config.get('gpu_mem');
         uiconf.sections[0].content[1].value = self.config.get('hdmihotplug');
+		uiconf.sections[0].content[2].value = self.config.get('usedac');
+		uiconf.sections[0].content[3].value = self.config.get('kalidelay');
         defer.resolve(uiconf);
     })
     .fail(function()
@@ -170,6 +172,8 @@ ControllerKodi.prototype.updateBootConfig = function (data)
 
 	self.config.set('gpu_mem', data['gpu_mem']);
 	self.config.set('hdmihotplug', data['hdmihotplug']);
+	self.config.set('usedac', data['usedac']);
+	self.config.set('kalidelay', data['kalidelay']);
 	self.logger.info("Successfully updated configuration");
 	
 	self.writeBootConfig(self.config)
@@ -193,6 +197,12 @@ ControllerKodi.prototype.writeBootConfig = function (config)
 	self.updateConfigFile("gpu_mem", self.config.get('gpu_mem'), "/boot/config.txt")
 	.then(function (hdmi) {
 		self.updateConfigFile("hdmi_force_hotplug", self.config.get('hdmihotplug'), "/boot/config.txt");
+	})
+	.then(function (dac) {
+		self.updateAsoundConfig(self.config.get('usedac'));
+	})
+	.then(function (kali) {
+		self.updateKodiConfig(self.config.get('kalidelay'));
 	})
 	.fail(function(e)
 	{
@@ -224,6 +234,64 @@ ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 	});
 	
 	self.commandRouter.pushToastMessage('success', "Shell command complete", "Successfully executed shell command.");
+	
+	return defer.promise;
+}
+
+ControllerKodi.prototype.updateAsoundConfig = function (useDac)
+{
+	var self = this;
+	var defer = libQ.defer();
+	var command;
+	
+	if(useDac)
+	{
+		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|0|1|g' /etc/asound.conf";
+	}
+	else
+	{
+		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|1|0|g' /etc/asound.conf";
+	}
+	
+	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
+		if(error)
+			console.log(stderr);
+		
+		defer.resolve();
+	});
+	
+	return defer.promise;
+}
+
+ControllerKodi.prototype.updateKodiConfig = function (useKaliDelay)
+{
+	var self = this;
+	var defer = libQ.defer();
+	var command;
+	var secondCommand;
+	
+	if(useKaliDelay)
+	{
+		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*audiodelay.*|<audiodelay>0.700000</audiodelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
+		secondCommand = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*subtitledelay.*|<subtitledelay>0.700000</subtitledelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
+	}
+	else
+	{
+		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*audiodelay.*|<audiodelay>0.000000</audiodelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
+		secondCommand = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*subtitledelay.*|<subtitledelay>0.000000</subtitledelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
+	}
+	
+	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
+		if(error)
+			console.log(stderr);
+	});
+	
+	exec(secondCommand, {uid:1000, gid:1000}, function (error, stout, stderr) {
+		if(error)
+			console.log(stderr);
+		
+		defer.resolve();
+	});
 	
 	return defer.promise;
 }

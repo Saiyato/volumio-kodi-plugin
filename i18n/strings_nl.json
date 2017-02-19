@@ -2,9 +2,10 @@
 	"KODI":{
 	"KODICONF":"Kodi opstartinstellingen",
 	"KODITITLE":"Opstartinstellingen",
-	"GPUMEM":"Geheugen gereserveerd voor GPU",
-	"AUTOSTART":"Start automatisch",	
+	"GPUMEM":"Geheugen gereserveerd voor GPU",	
 	"HDMIHOTPLUG":"HDMI hotplug mogelijkheid inschakelen",
+	"USEDAC":"Gebruik DAC voor Kodi",
+	"KALIDELAY":"Configureer de vertraging voor Kali",
 	"SAVE":"Opslaan"
 	}
 }

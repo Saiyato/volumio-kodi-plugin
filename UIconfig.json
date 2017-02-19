@@ -13,7 +13,9 @@
         "label": "TRANSLATE.KODI.SAVE",
         "data": [
           "gpu_mem",
-          "hdmihotplug"
+          "hdmihotplug",
+		  "usedac",
+		  "kalidelay"
         ]
       },
       "content": [
@@ -31,6 +33,20 @@
           "doc": "Determines whether HDMI should be considered hotplug",
           "label": "TRANSLATE.KODI.HDMIHOTPLUG",
           "value": true
+        },
+		{
+          "id":"usedac",
+          "element": "switch",
+          "doc": "Use I2S DAC for Kodi",
+          "label": "TRANSLATE.KODI.USEDAC",
+          "value": false
+        },
+		{
+          "id":"kalidelay",
+          "element": "switch",
+          "doc": "Set delay in Kodi for Kali reclocker (0.7s)",
+          "label": "TRANSLATE.KODI.KALIDELAY",
+          "value": false
         }
       ]
    }
