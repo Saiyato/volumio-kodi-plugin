@@ -48,13 +48,15 @@ then
 	# Add input rules
 	echo "Adding input rules"
 	rm /etc/udev/rules.d/99-input.rules
-	echo "SUBSYSTEM==\"input\", GROUP=\"input\", MODE=\"0660\"
+	echo "
+	SUBSYSTEM==\"input\", GROUP=\"input\", MODE=\"0660\"
 	KERNEL==\"tty[0-9]*\", GROUP=\"tty\", MODE=\"0660\"" | sudo tee -a /etc/udev/rules.d/99-input.rules
 
 	# Add input permissions
 	echo "Adding input permissions"
 	rm /etc/udev/rules.d/10-permissions.rules
-	echo "# input
+	echo "
+	# input
 	KERNEL==\"mouse*|mice|event*\",   MODE=\"0660\", GROUP=\"input\"
 	KERNEL==\"ts[0-9]*|uinput\",     MODE=\"0660\", GROUP=\"input\"
 	KERNEL==\"js[0-9]*\",             MODE=\"0660\", GROUP=\"input\"
@@ -75,17 +77,24 @@ then
 	sed -i -- 's|.*gpu_mem.*|gpu_mem=248|g' $CONFIG
 	
 	echo "Setting HDMI to hotplug..."
-	echo "hdmi_force_hotplug=1" | sudo tee -a $CONFIG 
+	if ! grep -q "hdmi_force_hotplug" $CONFIG; 
+	then
+		echo "hdmi_force_hotplug=1" | sudo tee -a $CONFIG 
+	else
+		sed -i -- 's|.*hdmi_force_hotplug.*|hdmi_force_hotplug=1|g' $CONFIG
+	fi	
 	
 	# Create the ALSA override file
 	echo "Creating ALSA override"
-	rm /etc/udev/rules.d/99-input.rules
-	echo "defaults.ctl.card 0
+	rm /etc/asound.conf
+	echo "
+	defaults.ctl.card 0
 	defaults.pcm.card 0" | sudo tee -a /etc/asound.conf
 	
 	# Add the systemd unit
 	rm /etc/systemd/system/kodi.service	
-	echo "[Unit]
+	echo "
+	[Unit]
 	Description = Kodi Media Center
 
 	# if you don't need the MySQL DB backend, this should be sufficient
