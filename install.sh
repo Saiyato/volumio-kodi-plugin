@@ -91,6 +91,63 @@ then
 	defaults.ctl.card 0
 	defaults.pcm.card 0" | sudo tee -a /etc/asound.conf
 	
+	# Let's throw in some repo URLs
+	echo "Adding file links to easily install repos, use at your own discretion, I do not own any of these! Nor can I be held responsible in any way, the information is readily available on the internet."
+	rm /home/kodi/.kodi/userdata/sources.xml
+	echo "
+<sources>
+    <programs>
+        <default pathversion=\"1\"></default>
+    </programs>
+    <video>
+        <default pathversion=\"1\"></default>
+    </video>
+    <music>
+        <default pathversion=\"1\"></default>
+    </music>
+    <pictures>
+        <default pathversion=\"1\"></default>
+    </pictures>
+    <files>
+        <default pathversion=\"1\"></default>
+		<source>
+            <name>Filmkodi Repo</name>
+            <path pathversion=\"1\">http://kodi.filmkodi.com</path>
+            <allowsharing>true</allowsharing>
+        </source>
+        <source>
+            <name>SuperRepo</name>
+            <path pathversion=\"1\">http://srp.nu/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>Muckys</name>
+            <path pathversion=\"1\">http://muckys.mediaportal4kodi.ml/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>Fusion</name>
+            <path pathversion=\"1\">http://fusion.tvaddons.ag/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>Merlin</name>
+            <path pathversion=\"1\">http://mwiz.co.uk/repo</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>UFO Repo</name>
+            <path pathversion=\"1\">http://theuforepo.us/repo/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>Origin Repo</name>
+            <path pathversion=\"1\">http://originent.net16.net/originrepo</path>
+            <allowsharing>true</allowsharing>
+        </source>
+    </files>
+</sources>" | sudo tee -a /home/kodi/.kodi/userdata/sources.xml
+	
 	# Add the systemd unit
 	rm /etc/systemd/system/kodi.service	
 	echo "
