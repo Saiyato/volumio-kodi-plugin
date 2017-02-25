@@ -121,10 +121,12 @@ ControllerKodi.prototype.getUIConfig = function() {
     __dirname + '/UIConfig.json')
     .then(function(uiconf)
     {
-        uiconf.sections[0].content[0].value = self.config.get('gpu_mem');
-        uiconf.sections[0].content[1].value = self.config.get('hdmihotplug');
-		uiconf.sections[0].content[2].value = self.config.get('usedac');
-		uiconf.sections[0].content[3].value = self.config.get('kalidelay');
+        uiconf.sections[0].content[0].value = self.config.get('gpu_mem_1024');
+		uiconf.sections[0].content[1].value = self.config.get('gpu_mem_512');
+		uiconf.sections[0].content[2].value = self.config.get('gpu_mem_256');
+        uiconf.sections[0].content[3].value = self.config.get('hdmihotplug');
+		uiconf.sections[0].content[4].value = self.config.get('usedac');
+		uiconf.sections[0].content[5].value = self.config.get('kalidelay');
         defer.resolve(uiconf);
     })
     .fail(function()
@@ -170,7 +172,9 @@ ControllerKodi.prototype.updateBootConfig = function (data)
 	var self = this;
 	var defer = libQ.defer();
 
-	self.config.set('gpu_mem', data['gpu_mem']);
+	self.config.set('gpu_mem_1024', data['gpu_mem_1024']);
+	self.config.set('gpu_mem_512', data['gpu_mem_512']);
+	self.config.set('gpu_mem_256', data['gpu_mem_256']);
 	self.config.set('hdmihotplug', data['hdmihotplug']);
 	self.config.set('usedac', data['usedac']);
 	self.config.set('kalidelay', data['kalidelay']);
@@ -194,7 +198,13 @@ ControllerKodi.prototype.writeBootConfig = function (config)
 	var self = this;
 	var defer = libQ.defer();
 	
-	self.updateConfigFile("gpu_mem", self.config.get('gpu_mem'), "/boot/config.txt")
+	self.updateConfigFile("gpu_mem_1024", self.config.get('gpu_mem_1024'), "/boot/config.txt")
+	.then(function (gpu512) {
+		self.updateConfigFile("gpu_mem_512", self.config.get('gpu_mem_512'), "/boot/config.txt");
+	})
+	.then(function (gpu256) {
+		self.updateConfigFile("gpu_mem_256", self.config.get('gpu_mem_256'), "/boot/config.txt");
+	})
 	.then(function (hdmi) {
 		self.updateConfigFile("hdmi_force_hotplug", self.config.get('hdmihotplug'), "/boot/config.txt");
 	})
@@ -225,7 +235,8 @@ ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 	else
 		castValue = value;
 	
-	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*" + setting + ".*|" + setting + "=" + castValue + "|g' " + file;
+	//var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*" + setting + ".*|" + setting + "=" + castValue + "|g' " + file;
+	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed '/^" + setting + "=/{h;s/=.*/=" + castValue + "/};${x;/^$/{s//" + setting + "=" + castValue + "/;H};x}' -i " + file;
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
 			console.log(stderr);

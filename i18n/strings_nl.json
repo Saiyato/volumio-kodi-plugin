@@ -2,7 +2,9 @@
 	"KODI":{
 	"KODICONF":"Kodi opstartinstellingen",
 	"KODITITLE":"Opstartinstellingen",
-	"GPUMEM":"Geheugen gereserveerd voor GPU",	
+	"GPUMEM1024":"Geheugen gereserveerd voor GPU (Raspberry Pi 2B en nieuwer)",
+	"GPUMEM512":"Geheugen gereserveerd voor GPU (Raspberry Pi A+, B, B+ en Zero)",
+	"GPUMEM256":"Geheugen gereserveerd voor GPU (Raspberry Pi A)",
 	"HDMIHOTPLUG":"HDMI hotplug mogelijkheid inschakelen",
 	"USEDAC":"Gebruik DAC voor Kodi",
 	"KALIDELAY":"Configureer de vertraging voor Kali",

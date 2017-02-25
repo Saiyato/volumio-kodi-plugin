@@ -12,7 +12,9 @@
       "saveButton": {
         "label": "TRANSLATE.KODI.SAVE",
         "data": [
-          "gpu_mem",
+          "gpu_mem_1024",
+		  "gpu_mem_512",
+		  "gpu_mem_256",
           "hdmihotplug",
 		  "usedac",
 		  "kalidelay"
@@ -20,12 +22,28 @@
       },
       "content": [
         {
-          "id": "gpu_mem",
+          "id": "gpu_mem_1024",
           "type":"text",
           "element": "input",
-          "doc": "This is the amount of memory reserved for the GPU",
-          "label": "TRANSLATE.KODI.GPUMEM",
-          "value": "248"
+          "doc": "This is the amount of memory reserved for the GPU (1024MB model)",
+          "label": "TRANSLATE.KODI.GPUMEM1024",
+          "value": "256"
+        },
+		{
+          "id": "gpu_mem_512",
+          "type":"text",
+          "element": "input",
+          "doc": "This is the amount of memory reserved for the GPU (512MB model)",
+          "label": "TRANSLATE.KODI.GPUMEM512",
+          "value": "144"
+        },
+		{
+          "id": "gpu_mem_256",
+          "type":"text",
+          "element": "input",
+          "doc": "This is the amount of memory reserved for the GPU (256MB model)",
+          "label": "TRANSLATE.KODI.GPUMEM256",
+          "value": "112"
         },
 		{
           "id":"hdmihotplug",

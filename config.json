@@ -1,7 +1,15 @@
 {
-  "gpu_mem": {
+  "gpu_mem_1024": {
     "type": "string",
-    "value": "248"
+    "value": "256"
+  },
+  "gpu_mem_512": {
+    "type": "string",
+    "value": "144"
+  },
+  "gpu_mem_256": {
+    "type": "string",
+    "value": "112"
   },
  "hdmihotplug": {
     "type": "boolean",

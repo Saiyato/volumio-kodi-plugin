@@ -73,21 +73,18 @@ then
 	# Update the boot config
 	CONFIG="/boot/config.txt"
 	
-	echo "Updating GPU memory to 248MB..."	
-	sed -i -- 's|.*gpu_mem.*|gpu_mem=248|g' $CONFIG
+	echo "Updating GPU memory to 256MB/144MB/112MB..."	
+	sed '/^gpu_mem_1024=/{h;s/=.*/=256/};${x;/^$/{s//gpu_mem_1024=256/;H};x}' -i $CONFIG
+	sed '/^gpu_mem_512=/{h;s/=.*/=144/};${x;/^$/{s//gpu_mem_512=144/;H};x}' -i $CONFIG
+	sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG
 	
 	echo "Setting HDMI to hotplug..."
-	if ! grep -q "hdmi_force_hotplug" $CONFIG; 
-	then
-		echo "hdmi_force_hotplug=1" | sudo tee -a $CONFIG 
-	else
-		sed -i -- 's|.*hdmi_force_hotplug.*|hdmi_force_hotplug=1|g' $CONFIG
-	fi	
+	sed '/^hdmi_force_hotplug=/{h;s/=.*/=1/};${x;/^$/{s//hdmi_force_hotplug=1/;H};x}' -i $CONFIG
 	
 	# Create the ALSA override file
 	echo "Creating ALSA override"
 	rm /etc/asound.conf
-	echo "
+	echo "# Override alsa.conf settings
 	defaults.ctl.card 0
 	defaults.pcm.card 0" | sudo tee -a /etc/asound.conf
 	
@@ -111,38 +108,38 @@ then
     <files>
         <default pathversion=\"1\"></default>
 		<source>
-            <name>Filmkodi Repo</name>
+            <name>[repo] Filmkodi Repo</name>
             <path pathversion=\"1\">http://kodi.filmkodi.com</path>
             <allowsharing>true</allowsharing>
         </source>
-        <source>
-            <name>SuperRepo</name>
-            <path pathversion=\"1\">http://srp.nu/</path>
-            <allowsharing>true</allowsharing>
-        </source>
 		<source>
-            <name>Muckys</name>
-            <path pathversion=\"1\">http://muckys.mediaportal4kodi.ml/</path>
-            <allowsharing>true</allowsharing>
-        </source>
-		<source>
-            <name>Fusion</name>
+            <name>[repo] Fusion</name>
             <path pathversion=\"1\">http://fusion.tvaddons.ag/</path>
             <allowsharing>true</allowsharing>
         </source>
 		<source>
-            <name>Merlin</name>
+            <name>[repo] Merlin</name>
             <path pathversion=\"1\">http://mwiz.co.uk/repo</path>
             <allowsharing>true</allowsharing>
         </source>
 		<source>
-            <name>UFO Repo</name>
-            <path pathversion=\"1\">http://theuforepo.us/repo/</path>
+            <name>[repo] Muckys</name>
+            <path pathversion=\"1\">http://muckys.mediaportal4kodi.ml/</path>
             <allowsharing>true</allowsharing>
         </source>
 		<source>
-            <name>Origin Repo</name>
+            <name>[repo] Origin Repo</name>
             <path pathversion=\"1\">http://originent.net16.net/originrepo</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>[repo] SuperRepo</name>
+            <path pathversion=\"1\">http://srp.nu/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>[repo] UFO Repo</name>
+            <path pathversion=\"1\">http://theuforepo.us/repo/</path>
             <allowsharing>true</allowsharing>
         </source>
     </files>
@@ -150,7 +147,7 @@ then
 	
 	# Add the systemd unit
 	rm /etc/systemd/system/kodi.service	
-	echo "
+	echo "# Kodi as-a-service
 	[Unit]
 	Description = Kodi Media Center
 

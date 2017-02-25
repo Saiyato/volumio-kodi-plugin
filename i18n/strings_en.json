@@ -2,7 +2,9 @@
 	"KODI":{
 	"KODICONF":"Kodi boot configuration",
 	"KODITITLE":"Boot settings",
-	"GPUMEM":"Memory reserved for GPU",
+	"GPUMEM1024":"Memory reserved for GPU (Raspberry Pi 2B and higher)",
+	"GPUMEM512":"Memory reserved for GPU (Raspberry Pi A+, B, B+ and Zero)",
+	"GPUMEM256":"Memory reserved for GPU (Raspberry Pi A)",
 	"HDMIHOTPLUG":"Set HDMI to hotplug",
 	"USEDAC":"Enable DAC output for Kodi",
 	"KALIDELAY":"Configure Kali sound delay for Kodi",
