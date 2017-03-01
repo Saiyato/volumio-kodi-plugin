@@ -1,13 +1,18 @@
 {
 	"KODI":{
-	"KODICONF":"Kodi boot configuration",
-	"KODITITLE":"Boot settings",
+	"KODICONF":"Kodi Configuration",
+	"KODITITLE":"System settings",
+	"KODISOUNDTITLE":"Sound settings",
 	"GPUMEM1024":"Memory reserved for GPU (Raspberry Pi 2B and higher)",
 	"GPUMEM512":"Memory reserved for GPU (Raspberry Pi A+, B, B+ and Zero)",
 	"GPUMEM256":"Memory reserved for GPU (Raspberry Pi A)",
 	"HDMIHOTPLUG":"Set HDMI to hotplug",
 	"USEDAC":"Enable DAC output for Kodi",
-	"KALIDELAY":"Configure Kali sound delay for Kodi",
-	"SAVE":"Save"
+	"KALIDELAY":"Configure Kali sound delay for Kodi (0.7s)",
+	"SAVE":"Save",
+	"RESTARTTITLE":"Restart required",
+	"RESTARTMESSAGE":"Boot configuration has been changed, a restart is required for the settings to apply.",
+	"RESTART":"Restart",
+	"CONTINUE":"Restart later"
 	}
 }

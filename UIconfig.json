@@ -15,9 +15,7 @@
           "gpu_mem_1024",
 		  "gpu_mem_512",
 		  "gpu_mem_256",
-          "hdmihotplug",
-		  "usedac",
-		  "kalidelay"
+          "hdmihotplug"
         ]
       },
       "content": [
@@ -51,7 +49,23 @@
           "doc": "Determines whether HDMI should be considered hotplug",
           "label": "TRANSLATE.KODI.HDMIHOTPLUG",
           "value": true
-        },
+        }
+      ]
+   },
+   {
+      "id": "section_soundconf",
+      "element": "section",
+      "label": "TRANSLATE.KODI.KODISOUNDTITLE",
+      "icon": "fa-music",
+      "onSave": {"type":"controller", "endpoint":"miscellanea/Kodi", "method":"updateSoundConfig"},
+      "saveButton": {
+        "label": "TRANSLATE.KODI.SAVE",
+        "data": [
+		  "usedac",
+		  "kalidelay"
+        ]
+      },
+      "content": [
 		{
           "id":"usedac",
           "element": "switch",
@@ -67,6 +81,6 @@
           "value": false
         }
       ]
-   }
+   }   
   ]
 }

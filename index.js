@@ -125,8 +125,8 @@ ControllerKodi.prototype.getUIConfig = function() {
 		uiconf.sections[0].content[1].value = self.config.get('gpu_mem_512');
 		uiconf.sections[0].content[2].value = self.config.get('gpu_mem_256');
         uiconf.sections[0].content[3].value = self.config.get('hdmihotplug');
-		uiconf.sections[0].content[4].value = self.config.get('usedac');
-		uiconf.sections[0].content[5].value = self.config.get('kalidelay');
+		uiconf.sections[1].content[0].value = self.config.get('usedac');
+		uiconf.sections[1].content[1].value = self.config.get('kalidelay');
         defer.resolve(uiconf);
     })
     .fail(function()
@@ -169,27 +169,89 @@ ControllerKodi.prototype.setConf = function(conf) {
 
 ControllerKodi.prototype.updateBootConfig = function (data) 
 {
+	var self = this;	
+	var defer = libQ.defer();
+	var configUpdated = false;
+	
+	if(self.config.get('gpu_mem_1024') != data['gpu_mem_1024'])
+	{
+		self.config.set('gpu_mem_1024', data['gpu_mem_1024']);
+		configUpdated = true;
+	}
+
+	if(self.config.get('gpu_mem_512') != data['gpu_mem_512'])
+	{
+		self.config.set('gpu_mem_512', data['gpu_mem_512']);
+		configUpdated = true;
+	}
+	
+	if(self.config.get('gpu_mem_256') != data['gpu_mem_256'])
+	{
+		self.config.set('gpu_mem_256', data['gpu_mem_256']);
+		configUpdated = true;
+	}
+	
+	if(self.config.get('hdmihotplug') != data['hdmihotplug'])
+	{
+		self.config.set('hdmihotplug', data['hdmihotplug']);
+		configUpdated = true;
+	}
+	
+	if(configUpdated)
+	{
+		self.writeBootConfig(self.config)
+		.fail(function(e)
+		{
+			defer.reject(new error());
+		})
+		
+		self.logger.info("Successfully updated boot configuration");
+		
+		var responseData = {
+			//title: self.commandRouter.getI18nString('KODI.RESTARTTITLE'),
+			title: 'Restart required [no translation available]',
+			//message: self.commandRouter.getI18nString('KODI.RESTARTMESSAGE'),
+			message: 'Changes have been made to the boot configuration a restart is required. [no translation available]',
+			size: 'lg',
+			buttons: [{
+					name: self.commandRouter.getI18nString('COMMON.RESTART'),
+					class: 'btn btn-info',
+					emit: 'reboot',
+					payload: ''
+				}, {
+					name: self.commandRouter.getI18nString('COMMON.CONTINUE'),
+					class: 'btn btn-info',
+					emit: '',
+					payload: ''
+				}
+			]
+		}
+
+		self.commandRouter.broadcastMessage("openModal", responseData);
+	}
+	else
+	{
+		self.commandRouter.pushToastMessage('success', "No change", "No changes detected, will not save.");
+	}
+
+	return defer.promise;
+}
+
+ControllerKodi.prototype.updateSoundConfig = function (data)
+{
 	var self = this;
 	var defer = libQ.defer();
-
-	self.config.set('gpu_mem_1024', data['gpu_mem_1024']);
-	self.config.set('gpu_mem_512', data['gpu_mem_512']);
-	self.config.set('gpu_mem_256', data['gpu_mem_256']);
-	self.config.set('hdmihotplug', data['hdmihotplug']);
+	
 	self.config.set('usedac', data['usedac']);
 	self.config.set('kalidelay', data['kalidelay']);
-	self.logger.info("Successfully updated configuration");
+	self.logger.info("Successfully updated sound configuration");
 	
-	self.writeBootConfig(self.config)
-	.then(function(e){
-		self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully wrote the settings to /boot/config.txt");
-		defer.resolve({});
-	})
+	self.writeSoundConfig(data)
 	.fail(function(e)
 	{
 		defer.reject(new error());
 	})
-
+	
 	return defer.promise;
 }
 
@@ -208,12 +270,6 @@ ControllerKodi.prototype.writeBootConfig = function (config)
 	.then(function (hdmi) {
 		self.updateConfigFile("hdmi_force_hotplug", self.config.get('hdmihotplug'), "/boot/config.txt");
 	})
-	.then(function (dac) {
-		self.updateAsoundConfig(self.config.get('usedac'));
-	})
-	.then(function (kali) {
-		self.updateKodiConfig(self.config.get('kalidelay'));
-	})
 	.fail(function(e)
 	{
 		defer.reject(new Error());
@@ -221,6 +277,21 @@ ControllerKodi.prototype.writeBootConfig = function (config)
 	
 	self.commandRouter.pushToastMessage('success', "Configuration update", "A reboot is required, changes have been made to /boot/config.txt");
 
+	return defer.promise;
+}
+
+ControllerKodi.prototype.writeSoundConfig = function (soundConfig)
+{
+	var self = this;
+	var defer = libQ.defer();
+	
+	self.updateAsoundConfig(soundConfig['usedac'])	
+	.then(function (kali) {
+		self.updateKodiConfig(soundConfig['kalidelay']);
+	})
+	
+	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully updated sound settings");
+	
 	return defer.promise;
 }
 
@@ -235,7 +306,6 @@ ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 	else
 		castValue = value;
 	
-	//var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*" + setting + ".*|" + setting + "=" + castValue + "|g' " + file;
 	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed '/^" + setting + "=/{h;s/=.*/=" + castValue + "/};${x;/^$/{s//" + setting + "=" + castValue + "/;H};x}' -i " + file;
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
@@ -243,8 +313,6 @@ ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 		
 		defer.resolve();
 	});
-	
-	self.commandRouter.pushToastMessage('success', "Shell command complete", "Successfully executed shell command.");
 	
 	return defer.promise;
 }

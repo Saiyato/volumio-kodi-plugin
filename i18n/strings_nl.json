@@ -1,13 +1,18 @@
 {
 	"KODI":{
-	"KODICONF":"Kodi opstartinstellingen",
-	"KODITITLE":"Opstartinstellingen",
+	"KODICONF":"Kodi Configuratie",
+	"KODITITLE":"Systeeminstellingen",
+	"KODISOUNDTITLE":"Geluidsinstellingen",
 	"GPUMEM1024":"Geheugen gereserveerd voor GPU (Raspberry Pi 2B en nieuwer)",
 	"GPUMEM512":"Geheugen gereserveerd voor GPU (Raspberry Pi A+, B, B+ en Zero)",
 	"GPUMEM256":"Geheugen gereserveerd voor GPU (Raspberry Pi A)",
 	"HDMIHOTPLUG":"HDMI hotplug mogelijkheid inschakelen",
 	"USEDAC":"Gebruik DAC voor Kodi",
-	"KALIDELAY":"Configureer de vertraging voor Kali",
-	"SAVE":"Opslaan"
+	"KALIDELAY":"Configureer de vertraging voor Kali (0,7s)",
+	"SAVE":"Opslaan",
+	"RESTARTTITLE":"Herstart vereist",
+	"RESTARTMESSAGE":"De systeemconfiguratie is gewijzigd, een herstart is nodig om alle instellingen toe te passen.",
+	"RESTART":"Herstart",
+	"CONTINUE":"Herstart later"
 	}
 }
