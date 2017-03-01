@@ -6,7 +6,7 @@ The zip-file contains all the scripts you need to install Kodi on top of any Vol
 If you enable the plugin in the plugins section in Volumio it will automatically start, you might want to reboot first after installation.
 ![Alt text](/images/plugin_enabled.png?raw=true "Plugin enabled")
 
-The system settings section allows you to change the amount of memory reserved for the gpu and whether the HDMI port should be considered hotplug.
+The system settings section allows you to change the amount of memory reserved for the gpu and wether the HDMI port should be considered hotplug.
 ![Alt text](/images/system_settings.png?raw=true "System settings")
 
 The sound settings section allows you to override ALSA's default soundcard, thus enabling you to use your DAC in Kodi. Also, if you are using a Kali reclocker, you might want to configure the delay (of 0.7 seconds).
