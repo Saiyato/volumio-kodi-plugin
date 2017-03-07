@@ -63,7 +63,6 @@ ControllerKodi.prototype.onStop = function() {
 
 ControllerKodi.prototype.onStart = function() {
 	var self = this;
-
 	var defer=libQ.defer();
 
 	exec("/usr/bin/sudo /bin/systemctl start kodi.service", {uid:1000,gid:1000}, function (error, stdout, stderr) {
@@ -100,7 +99,27 @@ ControllerKodi.prototype.onRestart = function()
 ControllerKodi.prototype.onInstall = function() 
 {
 	var self = this;
-	//Perform your installation tasks here
+	var responseData = {
+	//title: self.commandRouter.getI18nString('KODI.RESTARTTITLE'),
+	title: 'Restart required [no translation available]',
+	//message: self.commandRouter.getI18nString('KODI.RESTARTMESSAGE'),
+	message: 'Changes have been made to the boot configuration a restart is required. [no translation available]',
+	size: 'lg',
+	buttons: [{
+			name: self.commandRouter.getI18nString('COMMON.RESTART'),
+			class: 'btn btn-info',
+			emit: 'reboot',
+			payload: ''
+			}, {
+				name: self.commandRouter.getI18nString('COMMON.CONTINUE'),
+				class: 'btn btn-info',
+				emit: '',
+				payload: ''
+			}
+		]
+	}
+
+	self.commandRouter.broadcastMessage("openModal", responseData);
 };
 
 ControllerKodi.prototype.onUninstall = function() 
@@ -155,17 +174,32 @@ ControllerKodi.prototype.getConf = function(configFile) {
 };
 
 ControllerKodi.prototype.setConf = function(conf) {
-	// var self = this;
-	
-	// fs.writeJsonSync(this.configFile, JSON.stringify(conf));
-	// self.commandRouter.pushToastMessage('success',"Kodi", "Boot configuration saved");
-	
-	// return libQ.resolve();
-	
-	// Obsolete! Config: autosave=true
+	var self = this;
+	return libQ.resolve();
 };
 
 // Public Methods ---------------------------------------------------------------------------------------
+
+ControllerKodi.prototype.restartKodi = function ()
+{
+	var self = this;
+	var defer=libQ.defer();
+
+	exec("/usr/bin/sudo /bin/systemctl restart kodi.service", {uid:1000,gid:1000}, function (error, stdout, stderr) {
+		if (error !== null) {
+			self.commandRouter.pushConsoleMessage('The following error occurred while starting KODI: ' + error);
+			self.commandRouter.pushToastMessage('error', "Restart failed", "Restarting Kodi failed with error: " + error);
+			defer.reject();
+		}
+		else {
+			self.commandRouter.pushConsoleMessage('KODI started');
+			self.commandRouter.pushToastMessage('success', "Restarted Kodi", "Restarted Kodi for the changes to take effect.");
+			defer.resolve();
+		}
+	});
+
+	return defer.promise;
+}
 
 ControllerKodi.prototype.updateBootConfig = function (data) 
 {
@@ -247,6 +281,9 @@ ControllerKodi.prototype.updateSoundConfig = function (data)
 	self.logger.info("Successfully updated sound configuration");
 	
 	self.writeSoundConfig(data)
+	.then(function (restartService) {
+		self.restartKodi();
+	})
 	.fail(function(e)
 	{
 		defer.reject(new error());

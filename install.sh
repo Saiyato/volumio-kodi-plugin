@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Installing Kodi and its dependencies..."
+echo "Installing Kodi and its dependencies... [script version 1.7]"
 
 echo "Detecting cpu"
 cpu=$(lscpu | awk 'FNR == 1 {print $2}')
@@ -10,6 +10,12 @@ then
 	echo "deb http://archive.mene.za.net/raspbian jessie contrib" | sudo tee -a /etc/apt/sources.list
 	apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED
 fi
+# if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
+# then
+	# echo "deb http://pipplware.pplware.pt/pipplware/dists/jessie/main/binary /" | sudo tee -a /etc/apt/sources.list
+	# wget -o - http://pipplware.pplware.pt/pipplware/key.asc | sudo apt-key add -
+# fi
+
 
 # Continue installation
 if [ $? -eq 0 ]
@@ -17,6 +23,10 @@ then
 	
 	# Update repositories
 	echo "Updating package lists..."
+	while fuser /var/lib/dpkg/lock >/dev/null 2>&1 ; do
+		echo -en "\r Waiting for other software managers to finish..." 
+		sleep 2
+	done
 	apt-get update
 
 	# armv6l
@@ -36,8 +46,17 @@ then
 		exit -1
 	fi
 	
-	# Install Kodi and debugger
-	apt-get -y install gdb kodi
+	# Install Kodi and debugger	
+	if [ -f "/usr/bin/kodi" ]
+	then
+		echo "Kodi binaries found, not installing!"
+	else
+		while fuser /var/lib/dpkg/lock >/dev/null 2>&1 ; do
+		echo -en "\r Waiting for other software managers to finish..." 
+			sleep 2
+		done
+		apt-get -y install gdb kodi
+	fi
 	
 	# Prepare usergroups and configure user
 	echo "Preparing the Kodi user and groups"
