@@ -303,7 +303,7 @@ ControllerKodi.prototype.optimiseKodi = function (data)
 	self.config.set('kodi_audio_keepalive', data['kodi_audio_keepalive']);
 	self.logger.info("Successfully optimised Kodi");
 	
-	self.writeSoundConfig(data)
+	self.writeKodiOptimalisation(data)
 	.fail(function(e)
 	{
 		defer.reject(new error());
@@ -356,10 +356,11 @@ ControllerKodi.prototype.writeKodiOptimalisation = function (optimalisation)
 {
 	var self = this;
 	var defer = libQ.defer();
+	var kodiSettings = '/home/kodi/.kodi/userdata/guisettings.xml';
 	
-	self.standardSed('kodi_gui_sounds', optimalisation['kodi_gui_sounds'])	
+	self.xmlSed('guisoundmode', optimalisation['kodi_gui_sounds'], kodiSettings, false, false)	
 	.then(function (keepalive) {
-		self.standardSed('kodi_audio_keepalive', optimalisation['kodi_audio_keepalive']);
+		self.xmlSed('streamsilence', optimalisation['kodi_audio_keepalive'], kodiSettings, false, false);
 	})
 	
 	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully optimised Kodi");
@@ -367,25 +368,23 @@ ControllerKodi.prototype.writeKodiOptimalisation = function (optimalisation)
 	return defer.promise;
 }
 
-ControllerKodi.prototype.standardSed = function (setting, value, file, defaultAttribute = false)
+ControllerKodi.prototype.xmlSed = function (setting, value, file, booleanText, defaultAttribute)
 {
 	var self = this;
 	var defer = libQ.defer();
 	var castValue;
 	var defaultAttributeText = " default=\"true\"";
 	
-	if(value == true || value == false)
+	if((value == true || value == false) && !booleanText)
 			castValue = ~~value;
 	else
 		castValue = value;
 	
-	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|" + setting + ".*|<" + setting + ">" + value + "</" + setting + ">|g' -i " + file;
+	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting + ">" + castValue + "</" + setting + ">|g' -i " + file;
 	
 	if(defaultAttribute)
-		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|" + setting + ".*|<" + setting + defaultAttributeText + ">" + value + "</" + setting + ">|g' -i " + file;
-	
-	if(removeDefault)
-	
+		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting + defaultAttributeText + ">" + castValue + "</" + setting + ">|g' -i " + file;
+		
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
 			console.log(stderr);

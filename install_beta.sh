@@ -145,10 +145,9 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 		
 		# Modify the Kodi config file
 		KODICONFIG="/home/kodi/.kodi/userdata/guisettings.xml"
-		sed -i -- 's|<channels>1</channels>|<channels>2</channels>|g' $KODICONFIG
-		sed -i -- 's|<processquality>101</processquality>|<processquality>50</processquality>|g' $KODICONFIG
-		sed -i -- 's|<streamsilence>1</streamsilence>|<streamsilence>0</streamsilence>|g' $KODICONFIG
-		sed -i -- 's|<guisoundmode default="true">1</guisoundmode>|<guisoundmode>0</guisoundmode>|g' $KODICONFIG
+		sed -i -- 's|<processquality.*|<processquality>50</processquality>|g' $KODICONFIG
+		sed -i -- 's|<streamsilence.*|<streamsilence>0</streamsilence>|g' $KODICONFIG
+		sed -i -- 's|<guisoundmode.*|<guisoundmode>0</guisoundmode>|g' $KODICONFIG
 		
 		# Let's throw in some repo URLs
 		echo "Adding file links to easily install repos, use at your own discretion, I do not own any of these! Nor can I be held responsible in any way, the information is readily available on the internet."
