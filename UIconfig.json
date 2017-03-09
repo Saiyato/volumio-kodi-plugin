@@ -53,10 +53,10 @@
       ]
    },
    {
-      "id": "section_soundconf",
+      "id": "section_dacconf",
       "element": "section",
       "label": "TRANSLATE.KODI.KODISOUNDTITLE",
-      "icon": "fa-music",
+      "icon": "fa-volume-up",
       "onSave": {"type":"controller", "endpoint":"miscellanea/Kodi", "method":"updateSoundConfig"},
       "saveButton": {
         "label": "TRANSLATE.KODI.SAVE",
@@ -81,6 +81,36 @@
           "value": false
         }
       ]
-   }   
+   },
+	{
+      "id": "section_optimiseconf",
+      "element": "section",
+      "label": "TRANSLATE.KODI.KODIOPTIMISETITLE",
+      "icon": "fa-wrench",
+      "onSave": {"type":"controller", "endpoint":"miscellanea/Kodi", "method":"optimiseKodi"},
+      "saveButton": {
+        "label": "TRANSLATE.KODI.SAVE",
+        "data": [
+		  "kodi_gui_sounds",
+		  "kodi_audio_keepalive"
+        ]
+      },
+      "content": [
+		{
+          "id":"kodi_gui_sounds",
+          "element": "switch",
+          "doc": "En- or disable Kodi GUI sounds",
+          "label": "TRANSLATE.KODI.KODI_GUI_SOUNDS",
+          "value": false
+        },
+		{
+          "id":"kodi_audio_keepalive",
+          "element": "switch",
+          "doc": "Whether or not to keep the audio device alive",
+          "label": "TRANSLATE.KODI.KODI_AUDIO_KEEPALIVE",
+          "value": false
+        }
+      ]
+   }
   ]
 }

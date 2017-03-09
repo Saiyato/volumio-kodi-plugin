@@ -8,11 +8,11 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 	cpu=$(lscpu | awk 'FNR == 1 {print $2}')
 	echo "cpu: " $cpu
 
-	# Only add the repo if it doesn't already exist -> pipplware = Krypton RC1
-	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
+	# Only add the repo if it doesn't already exist -> mene.za.net /contrib = Jarvis
+	if ! grep -q "mene.za.net" /etc/apt/sources.list /etc/apt/sources.list.d/*
 	then
-		echo "deb http://pipplware.pplware.pt/pipplware/dists/jessie/main/binary /" | sudo tee -a /etc/apt/sources.list
-		wget -O - http://pipplware.pplware.pt/pipplware/key.asc | sudo apt-key add -
+		echo "deb http://archive.mene.za.net/raspbian jessie contrib" | sudo tee -a /etc/apt/sources.list
+		apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED
 	fi
 
 	# Continue installation

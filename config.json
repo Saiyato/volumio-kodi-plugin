@@ -22,5 +22,13 @@
  "kalidelay": {
     "type": "boolean",
     "value": false
+  },
+ "kodi_gui_sounds": {
+    "type": "boolean",
+    "value": false
+  },
+ "kodi_audio_keepalive": {
+    "type": "boolean",
+    "value": false
   }
 }
