@@ -9,7 +9,7 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 	echo "cpu: " $cpu
 
 	# Only add the repo if it doesn't already exist -> mene.za.net /unstable = Krypton Beta
-	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
+	if ! grep -q "mene.za.net" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
 	then
 		echo "deb http://archive.mene.za.net/raspbian jessie contrib unstable" | sudo tee -a /etc/apt/sources.list
 		apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED
