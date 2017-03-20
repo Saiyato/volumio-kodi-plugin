@@ -53,7 +53,7 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 			echo "Waiting for other software managers to finish..."
 				sleep 2
 			done
-			apt-get -y install gdb kodi
+			apt-get -y install gdb fbset kodi
 		fi
 		
 		# Prepare usergroups and configure user
