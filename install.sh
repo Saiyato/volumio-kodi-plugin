@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Installing Kodi and its dependencies... (script version 1.9)"
+echo "Installing Kodi and its dependencies..."
 
 if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 
@@ -8,11 +8,11 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 	cpu=$(lscpu | awk 'FNR == 1 {print $2}')
 	echo "cpu: " $cpu
 
-	# Only add the repo if it doesn't already exist -> mene.za.net /unstable = Krypton Beta
-	if ! grep -q "mene.za.net" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
+	# Only add the repo if it doesn't already exist -> pipplware = Krypton RC1
+	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
 	then
-		echo "deb http://archive.mene.za.net/raspbian jessie contrib unstable" | sudo tee -a /etc/apt/sources.list
-		apt-key adv --keyserver keyserver.ubuntu.com --recv-key 5243CDED
+		echo "deb http://pipplware.pplware.pt/pipplware/dists/jessie/main/binary /" | sudo tee -a /etc/apt/sources.list
+		wget -O - http://pipplware.pplware.pt/pipplware/key.asc | sudo apt-key add -
 	fi
 
 	# Continue installation
@@ -53,7 +53,7 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 			echo "Waiting for other software managers to finish..."
 				sleep 2
 			done
-			apt-get -y install gdb kodi
+			apt-get -y install gdb fbset kodi
 		fi
 		
 		# Prepare usergroups and configure user
@@ -97,7 +97,7 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 		echo "Updating GPU memory to 256MB/144MB/112MB..."
 		sed '/^gpu_mem_1024=/{h;s/=.*/=256/};${x;/^$/{s//gpu_mem_1024=256/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_512=/{h;s/=.*/=144/};${x;/^$/{s//gpu_mem_512=144/;H};x}' -i $CONFIG
-		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG
+		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG		
 		
 		echo "Setting HDMI to hotplug..."
 		sed '/^hdmi_force_hotplug=/{h;s/=.*/=1/};${x;/^$/{s//hdmi_force_hotplug=1/;H};x}' -i $CONFIG
@@ -207,6 +207,10 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 	</sources>" | sudo tee -a /home/kodi/.kodi/userdata/sources.xml
 		
 		chown kodi:kodi /home/kodi/.kodi/userdata/sources.xml
+		
+		# Remove the archive/ppa
+		sed '/pipplware/d' -i /etc/apt/sources.list
+		apt-get autoclean
 		
 		rm /home/volumio/kodi-plugin.installing
 		
