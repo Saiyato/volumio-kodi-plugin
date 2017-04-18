@@ -12,4 +12,7 @@ The system settings section allows you to change the amount of memory reserved f
 The sound settings section allows you to override ALSA's default soundcard, thus enabling you to use your DAC in Kodi. Also, if you are using a Kali reclocker, you might want to configure the delay (of 0.7 seconds).
 ![Alt text](/images/sound_settings.png?raw=true "Sound settings")
 
+The Kodi optimalisation sections allows you to edit some Kodi sound configuration (requires a restart of Kodi) settings.
+![Alt text](/images/kodi_optimalisation.png?raw=true "Kodi sound settings")
+
 Enjoy!
