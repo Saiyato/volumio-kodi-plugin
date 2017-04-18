@@ -1,9 +1,10 @@
 #!/bin/bash
 echo "Installing Kodi and its dependencies..."
+INSTALLING="/home/volumio/kodi-plugin.installing"
 
-if [ ! -f /home/volumio/kodi-plugin.installing ]; then
+if [ ! -f $INSTALLING ]; then
 
-	touch /home/volumio/kodi-plugin.installing
+	touch $INSTALLING
 	echo "Detecting cpu"
 	cpu=$(lscpu | awk 'FNR == 1 {print $2}')
 	echo "cpu: " $cpu
@@ -210,9 +211,10 @@ if [ ! -f /home/volumio/kodi-plugin.installing ]; then
 		
 		# Remove the archive/ppa
 		sed '/pipplware/d' -i /etc/apt/sources.list
+		apt-key del BAA567BB
 		apt-get autoclean
 		
-		rm /home/volumio/kodi-plugin.installing
+		rm $INSTALLING
 		
 	else
 		echo "Could not add repository, cancelling installation."
