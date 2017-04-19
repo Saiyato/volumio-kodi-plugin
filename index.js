@@ -447,29 +447,19 @@ ControllerKodi.prototype.updateKodiConfig = function (useKaliDelay)
 	var self = this;
 	var defer = libQ.defer();
 	var command;
-	var secondCommand;
 	
 	if(useKaliDelay)
 	{
 		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*audiodelay.*|<audiodelay>0.700000</audiodelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
-		secondCommand = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*subtitledelay.*|<subtitledelay>0.700000</subtitledelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
 	}
 	else
 	{
 		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*audiodelay.*|<audiodelay>0.000000</audiodelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
-		secondCommand = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*subtitledelay.*|<subtitledelay>0.000000</subtitledelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
 	}
 	
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
 			console.log(stderr);
-	});
-	
-	exec(secondCommand, {uid:1000, gid:1000}, function (error, stout, stderr) {
-		if(error)
-			console.log(stderr);
-		
-		defer.resolve();
 	});
 	
 	return defer.promise;
