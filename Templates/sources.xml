@@ -1,0 +1,57 @@
+<sources>
+    <programs>
+        <default pathversion="1"></default>
+    </programs>
+    <video>
+        <default pathversion="1"></default>
+        <source>
+            <name>A_Most_Violent_Year_2014_1080p_BluRay_DTS_x264-CyTSuNee</name>
+            <path pathversion="1">nfs://192.168.178.100/Movies/Movies/A_Most_Violent_Year_2014_1080p_BluRay_DTS_x264-CyTSuNee/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+    </video>
+    <music>
+        <default pathversion="1"></default>
+    </music>
+    <pictures>
+        <default pathversion="1"></default>
+    </pictures>
+    <files>
+        <default pathversion="1"></default>
+        <source>
+            <name>[repo] Filmkodi Repo</name>
+            <path pathversion="1">http://kodi.filmkodi.com</path>
+            <allowsharing>true</allowsharing>
+        </source>
+        <source>
+            <name>[repo] Fusion</name>
+            <path pathversion="1">http://fusion.tvaddons.ag/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+        <source>
+            <name>[repo] Merlin</name>
+            <path pathversion="1">http://mwiz.co.uk/repo/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+        <source>
+            <name>[repo] Muckys</name>
+            <path pathversion="1">http://muckys.mediaportal4kodi.ml/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+        <source>
+            <name>[repo] Origin Repo</name>
+            <path pathversion="1">http://originent.net16.net/originrepo/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+        <source>
+            <name>[repo] SuperRepo</name>
+            <path pathversion="1">http://srp.nu/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+        <source>
+            <name>[repo] UFO Repo</name>
+            <path pathversion="1">http://theuforepo.us/repo/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+    </files>
+</sources>

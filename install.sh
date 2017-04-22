@@ -63,6 +63,15 @@ if [ ! -f $INSTALLING ]; then
 		#adduser kodi
 		useradd --create-home kodi
 		usermod -aG audio,video,input,dialout,plugdev,tty kodi
+		
+		# Link to /data/configuration/miscellanea/Kodi/Configuration
+		mkdir /data/configuration/miscellanea/Kodi
+		mkdir /data/configuration/miscellanea/Kodi/Configuration
+		chown volumio:volumio -R /data/configuration/miscellanea/Kodi
+		
+		ln -fs /data/configuration/miscellanea/Kodi/Configuration /home/kodi/.kodi
+		chown kodi:kodi -R /data/configuration/miscellanea/Kodi/Configuration
+		chown kodi:kodi -R /home/kodi
 
 		# Add input rules
 		echo "Adding input rules"
@@ -136,76 +145,9 @@ if [ ! -f $INSTALLING ]; then
 		WantedBy = multi-user.target" | sudo tee -a /etc/systemd/system/kodi.service
 		echo "Added the systemd unit"
 		
-		# Start Kodi to generate the config files
-		systemctl start kodi
-		echo "Waiting for Kodi to start, to create the config files..."
-		sleep 10
-		systemctl stop kodi
-		echo "Waiting for Kodi to exit..."
-		sleep 10
-		
-		# Modify the Kodi config file
-		KODICONFIG="/home/kodi/.kodi/userdata/guisettings.xml"
-		sed -i -- 's|<processquality.*|<processquality>50</processquality>|g' $KODICONFIG
-		sed -i -- 's|<streamsilence.*|<streamsilence>0</streamsilence>|g' $KODICONFIG
-		sed -i -- 's|<guisoundmode.*|<guisoundmode>0</guisoundmode>|g' $KODICONFIG
-		
 		# Let's throw in some repo URLs
 		echo "Adding file links to easily install repos, use at your own discretion, I do not own any of these! Nor can I be held responsible in any way, the information is readily available on the internet."
-		rm /home/kodi/.kodi/userdata/sources.xml
-		echo "
-	<sources>
-		<programs>
-			<default pathversion=\"1\"></default>
-		</programs>
-		<video>
-			<default pathversion=\"1\"></default>
-		</video>
-		<music>
-			<default pathversion=\"1\"></default>
-		</music>
-		<pictures>
-			<default pathversion=\"1\"></default>
-		</pictures>
-		<files>
-			<default pathversion=\"1\"></default>
-			<source>
-				<name>[repo] Filmkodi Repo</name>
-				<path pathversion=\"1\">http://kodi.filmkodi.com</path>
-				<allowsharing>true</allowsharing>
-			</source>
-			<source>
-				<name>[repo] Fusion</name>
-				<path pathversion=\"1\">http://fusion.tvaddons.ag/</path>
-				<allowsharing>true</allowsharing>
-			</source>
-			<source>
-				<name>[repo] Merlin</name>
-				<path pathversion=\"1\">http://mwiz.co.uk/repo</path>
-				<allowsharing>true</allowsharing>
-			</source>
-			<source>
-				<name>[repo] Muckys</name>
-				<path pathversion=\"1\">http://muckys.mediaportal4kodi.ml/</path>
-				<allowsharing>true</allowsharing>
-			</source>
-			<source>
-				<name>[repo] Origin Repo</name>
-				<path pathversion=\"1\">http://originent.net16.net/originrepo</path>
-				<allowsharing>true</allowsharing>
-			</source>
-			<source>
-				<name>[repo] SuperRepo</name>
-				<path pathversion=\"1\">http://srp.nu/</path>
-				<allowsharing>true</allowsharing>
-			</source>
-			<source>
-				<name>[repo] UFO Repo</name>
-				<path pathversion=\"1\">http://theuforepo.us/repo/</path>
-				<allowsharing>true</allowsharing>
-			</source>
-		</files>
-	</sources>" | sudo tee -a /home/kodi/.kodi/userdata/sources.xml
+		wget -O ### /home/kodi/.kodi/userdata/sources.xml
 		
 		chown kodi:kodi /home/kodi/.kodi/userdata/sources.xml
 		
