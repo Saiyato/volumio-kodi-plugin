@@ -67,6 +67,7 @@ if [ ! -f $INSTALLING ]; then
 		# Link to /data/configuration/miscellanea/Kodi/Configuration
 		mkdir /data/configuration/miscellanea/Kodi
 		mkdir /data/configuration/miscellanea/Kodi/Configuration
+		mkdir /data/configuration/miscellanea/Kodi/Configuration/userdata
 		chown volumio:volumio -R /data/configuration/miscellanea/Kodi
 		
 		ln -fs /data/configuration/miscellanea/Kodi/Configuration /home/kodi/.kodi
@@ -147,8 +148,10 @@ if [ ! -f $INSTALLING ]; then
 		
 		# Let's throw in some repo URLs
 		echo "Adding file links to easily install repos, use at your own discretion, I do not own any of these! Nor can I be held responsible in any way, the information is readily available on the internet."
-		wget -O ### /home/kodi/.kodi/userdata/sources.xml
+		wget -O /home/kodi/.kodi/userdata/guisettings.xml https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/Templates/guisettings.xml
+		wget -O /home/kodi/.kodi/userdata/sources.xml https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/Templates/sources.xml
 		
+		chown kodi:kodi /home/kodi/.kodi/userdata/guisettings.xml
 		chown kodi:kodi /home/kodi/.kodi/userdata/sources.xml
 		
 		# Remove the archive/ppa
