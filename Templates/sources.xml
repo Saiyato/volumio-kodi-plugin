@@ -4,11 +4,6 @@
     </programs>
     <video>
         <default pathversion="1"></default>
-        <source>
-            <name>A_Most_Violent_Year_2014_1080p_BluRay_DTS_x264-CyTSuNee</name>
-            <path pathversion="1">nfs://192.168.178.100/Movies/Movies/A_Most_Violent_Year_2014_1080p_BluRay_DTS_x264-CyTSuNee/</path>
-            <allowsharing>true</allowsharing>
-        </source>
     </video>
     <music>
         <default pathversion="1"></default>
