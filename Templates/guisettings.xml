@@ -544,7 +544,7 @@
         <brightness>50.000000</brightness>
         <contrast>50.000000</contrast>
         <gamma>20.000000</gamma>
-        <audiodelay>0.700000</audiodelay>
+        <audiodelay>0.000000</audiodelay>
         <subtitledelay>0.000000</subtitledelay>
         <nonlinstretch>false</nonlinstretch>
         <stereomode>0</stereomode>
