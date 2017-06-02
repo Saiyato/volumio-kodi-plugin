@@ -1,5 +1,5 @@
 # volumio-kodi-plugin
-Installation script for Kodi on Volumio 2.x images
+Installation script for Kodi on Volumio 2.x images (Raspberry Pi only)
 
 The zip-file contains all the scripts you need to install Kodi on top of any Volumio 2.x image. A settings page has been added to allow for easy configuration of the config.txt settings for Kodi and some specific sound settings in case you want to use your DAC for sound output.
 
@@ -15,4 +15,5 @@ The sound settings section allows you to override ALSA's default soundcard, thus
 The Kodi optimalisation sections allows you to edit some Kodi sound configuration (requires a restart of Kodi) settings.
 ![Alt text](/images/kodi_optimalisation.png?raw=true "Kodi sound settings")
 
-Enjoy!
+Supported devices:
+- Raspberry Pi A/B/A+/B+/2B/3B/Zero
