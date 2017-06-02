@@ -9,7 +9,7 @@ if [ ! -f $INSTALLING ]; then
 	cpu=$(lscpu | awk 'FNR == 1 {print $2}')
 	echo "cpu: " $cpu
 
-	# Only add the repo if it doesn't already exist -> pipplware = Krypton RC1
+	# Only add the repo if it doesn't already exist -> pipplware = Krypton 17.3 (at time of writing: 02-06-2017)
 	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
 	then
 		echo "deb http://pipplware.pplware.pt/pipplware/dists/jessie/main/binary /" | sudo tee -a /etc/apt/sources.list
