@@ -10,9 +10,9 @@ if [ ! -f $INSTALLING ]; then
 	echo "cpu: " $cpu
 
 	# Only add the repo if it doesn't already exist -> pipplware = Krypton 17.3 (at time of writing: 02-06-2017)
-	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*; 
+	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*.list;
 	then
-		echo "deb http://pipplware.pplware.pt/pipplware/dists/jessie/main/binary /" | sudo tee -a /etc/apt/sources.list
+		echo "deb http://pipplware.pplware.pt/pipplware/dists/jessie/main/binary /" | sudo tee -a /etc/apt/sources.list.d/pipplware.list
 		wget -O - http://pipplware.pplware.pt/pipplware/key.asc | sudo apt-key add -
 	fi
 
@@ -162,9 +162,10 @@ if [ ! -f $INSTALLING ]; then
 		chown kodi:kodi /home/kodi/.kodi/userdata/guisettings.xml
 		chown kodi:kodi /home/kodi/.kodi/userdata/sources.xml
 		
-		# Remove the archive/ppa
+		# disable the pipplware archive/ppa (don't delete it if you wanna update manually)
 		sed '/pipplware/d' -i /etc/apt/sources.list
-		apt-key del BAA567BB
+		mv /etc/apt/sources.list.d/pipplware.list /etc/apt/sources.list.d/pipplware.disabled
+		# apt-key del BAA567BB
 		apt-get autoclean
 		
 		rm $INSTALLING
