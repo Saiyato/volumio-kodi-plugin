@@ -145,6 +145,14 @@ if [ ! -f $INSTALLING ]; then
 		[Install]
 		WantedBy = multi-user.target" | sudo tee -a /etc/systemd/system/kodi.service
 		echo "Added the systemd unit"
+
+		echo "[Actions for kodi user]
+		Identity=unix-user:kodi
+		Action=org.freedesktop.upower.*;org.freedesktop.consolekit.system.*;org.freedesktop.udisks.*;org.freedesktop.login1.*
+		ResultAny=yes
+		ResultInactive=yes
+		ResultActive=yes" | sudo tee /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla
+		echo "Added policykit actions for kodi (access usb drives, reboot)"
 		
 		# Let's throw in some repo URLs
 		echo "Adding file links to easily install repos, use at your own discretion, I do not own any of these! Nor can I be held responsible in any way, the information is readily available on the internet."
