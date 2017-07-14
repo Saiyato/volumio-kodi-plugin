@@ -304,7 +304,7 @@
         <upnprenderer default="true">false</upnprenderer>
         <upnpserver default="true">false</upnpserver>
         <useairplaypassword default="true">false</useairplaypassword>
-        <webserver default="true">false</webserver>
+        <webserver default="true">true</webserver>
         <webserverpassword default="true"></webserverpassword>
         <webserverport default="true">8080</webserverport>
         <webserverusername default="true">kodi</webserverusername>

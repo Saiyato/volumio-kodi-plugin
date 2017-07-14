@@ -30,5 +30,21 @@
  "kodi_audio_keepalive": {
     "type": "boolean",
     "value": false
-  }
+  },
+ "kodi_enable_webserver": {
+    "type": "boolean",
+    "value": true
+  },
+ "kodi_webserver_port": {
+    "type": "string",
+    "value": "8080"
+  },
+ "kodi_webserver_username": {
+    "type": "string",
+    "value": "kodi"
+  },
+ "kodi_webserver_password": {
+    "type": "string",
+    "value": ""
+  }  
 }

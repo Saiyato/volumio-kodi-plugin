@@ -23,31 +23,31 @@
           "id": "gpu_mem_1024",
           "type":"text",
           "element": "input",
-          "doc": "This is the amount of memory reserved for the GPU (1024MB model)",
           "label": "TRANSLATE.KODI.GPUMEM1024",
+		  "doc": "TRANSLATE.KODI.D_GPUMEM1024",
           "value": "256"
         },
 		{
           "id": "gpu_mem_512",
           "type":"text",
           "element": "input",
-          "doc": "This is the amount of memory reserved for the GPU (512MB model)",
           "label": "TRANSLATE.KODI.GPUMEM512",
+		  "doc": "TRANSLATE.KODI.D-GPUMEM512",
           "value": "144"
         },
 		{
           "id": "gpu_mem_256",
           "type":"text",
           "element": "input",
-          "doc": "This is the amount of memory reserved for the GPU (256MB model)",
           "label": "TRANSLATE.KODI.GPUMEM256",
+		  "doc": "TRANSLATE.KODI.D_GPUMEM256",
           "value": "112"
         },
 		{
           "id":"hdmihotplug",
           "element": "switch",
-          "doc": "Determines whether HDMI should be considered hotplug",
           "label": "TRANSLATE.KODI.HDMIHOTPLUG",
+		  "doc": "TRANSLATE.KODI.D_HDMIHOTPLUG",
           "value": true
         }
       ]
@@ -69,15 +69,15 @@
 		{
           "id":"usedac",
           "element": "switch",
-          "doc": "Use I2S DAC for Kodi",
           "label": "TRANSLATE.KODI.USEDAC",
+		  "doc": "TRANSLATE.KODI.D_USEDAC",
           "value": false
         },
 		{
           "id":"kalidelay",
           "element": "switch",
-          "doc": "Set delay in Kodi for Kali reclocker (0.7s)",
           "label": "TRANSLATE.KODI.KALIDELAY",
+		  "doc": "TRANSLATE.KODI.D_KALIDELAY",
           "value": false
         }
       ]
@@ -85,31 +85,67 @@
 	{
       "id": "section_optimiseconf",
       "element": "section",
-      "label": "TRANSLATE.KODI.KODIOPTIMISETITLE",
+      "label": "TRANSLATE.KODI.KODI_SETTINGS",
       "icon": "fa-wrench",
       "onSave": {"type":"controller", "endpoint":"miscellanea/Kodi", "method":"optimiseKodi"},
       "saveButton": {
         "label": "TRANSLATE.KODI.SAVE",
         "data": [
 		  "kodi_gui_sounds",
-		  "kodi_audio_keepalive"
+		  "kodi_audio_keepalive",
+		  "kodi_enable_webserver",
+		  "kodi_webserver_port",
+		  "kodi_webserver_username",
+		  "kodi_webserver_password"
         ]
       },
       "content": [
 		{
           "id":"kodi_gui_sounds",
           "element": "switch",
-          "doc": "En- or disable Kodi GUI sounds",
           "label": "TRANSLATE.KODI.KODI_GUI_SOUNDS",
+		  "doc": "TRANSLATE.KODI.D_KODI_GUI_SOUNDS",
           "value": false
         },
 		{
           "id":"kodi_audio_keepalive",
           "element": "switch",
-          "doc": "Whether or not to keep the audio device alive",
           "label": "TRANSLATE.KODI.KODI_AUDIO_KEEPALIVE",
+		  "doc": "TRANSLATE.KODI.D_KODI_AUDIO_KEEPALIVE",
           "value": false
-        }
+        },
+		{
+          "id":"kodi_enable_webserver",
+          "element": "switch",
+          "doc": "Whether or not to keep the audio device alive",
+          "label": "TRANSLATE.KODI.KODI_ENABLE_WEBSERVER",
+		  "doc": "TRANSLATE.KODI.D_KODI_ENABLE_WEBSERVER",
+          "value": true
+        },
+		{
+          "id":"kodi_webserver_port",
+          "type":"text",
+          "element": "input",
+          "label": "TRANSLATE.KODI.KODI_WEBSERVER_PORT",
+		  "doc": "TRANSLATE.KODI.D_KODI_WEBSERVER_PORT",
+          "value": "8080"
+        },
+		{
+          "id":"kodi_webserver_username",
+          "type":"text",
+          "element": "input",
+          "label": "TRANSLATE.KODI.KODI_WEBSERVER_USERNAME",
+		  "doc": "TRANSLATE.KODI.D_KODI_WEBSERVER_USERNAME",
+          "value": "kodi"
+        },
+		{
+          "id":"kodi_webserver_password",
+          "type":"password",
+          "element": "input",
+          "label": "TRANSLATE.KODI.KODI_WEBSERVER_PASSWORD",
+		  "doc": "TRANSLATE.KODI.D_KODI_WEBSERVER_PASSWORD",
+          "value": ""
+        }		
       ]
    }
   ]

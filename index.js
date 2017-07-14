@@ -100,9 +100,7 @@ ControllerKodi.prototype.onInstall = function()
 {
 	var self = this;
 	var responseData = {
-	//title: self.commandRouter.getI18nString('KODI.RESTARTTITLE'),
 	title: 'Restart required [no translation available]',
-	//message: self.commandRouter.getI18nString('KODI.RESTARTMESSAGE'),
 	message: 'Changes have been made to the boot configuration a restart is required. [no translation available]',
 	size: 'lg',
 	buttons: [{
@@ -144,10 +142,16 @@ ControllerKodi.prototype.getUIConfig = function() {
 		uiconf.sections[0].content[1].value = self.config.get('gpu_mem_512');
 		uiconf.sections[0].content[2].value = self.config.get('gpu_mem_256');
         uiconf.sections[0].content[3].value = self.config.get('hdmihotplug');
+		
 		uiconf.sections[1].content[0].value = self.config.get('usedac');
 		uiconf.sections[1].content[1].value = self.config.get('kalidelay');
+		
 		uiconf.sections[2].content[0].value = self.config.get('kodi_gui_sounds');
 		uiconf.sections[2].content[1].value = self.config.get('kodi_audio_keepalive');
+		uiconf.sections[2].content[2].value = self.config.get('kodi_enable_webserver');
+		uiconf.sections[2].content[3].value = self.config.get('kodi_webserver_port');
+		uiconf.sections[2].content[4].value = self.config.get('kodi_webserver_username');
+		uiconf.sections[2].content[5].value = self.config.get('kodi_webserver_password');
         defer.resolve(uiconf);
     })
     .fail(function()
@@ -244,9 +248,7 @@ ControllerKodi.prototype.updateBootConfig = function (data)
 		self.logger.info("Successfully updated boot configuration");
 		
 		var responseData = {
-			//title: self.commandRouter.getI18nString('KODI.RESTARTTITLE'),
 			title: 'Restart required [no translation available]',
-			//message: self.commandRouter.getI18nString('KODI.RESTARTMESSAGE'),
 			message: 'Changes have been made to the boot configuration a restart is required. [no translation available]',
 			size: 'lg',
 			buttons: [{
@@ -301,7 +303,11 @@ ControllerKodi.prototype.optimiseKodi = function (data)
 	
 	self.config.set('kodi_gui_sounds', data['kodi_gui_sounds']);
 	self.config.set('kodi_audio_keepalive', data['kodi_audio_keepalive']);
-	self.logger.info("Successfully optimised Kodi");
+	self.config.set('kodi_enable_webserver', data['kodi_enable_webserver']);
+	self.config.set('kodi_webserver_port', data['kodi_webserver_port']);
+	self.config.set('kodi_webserver_username', data['kodi_webserver_username']);
+	self.config.set('kodi_webserver_password', data['kodi_webserver_password']);
+	self.logger.info("Successfully saved Kodi settings");
 	
 	self.writeKodiOptimalisation(data)
 	.fail(function(e)
@@ -344,7 +350,15 @@ ControllerKodi.prototype.writeSoundConfig = function (soundConfig)
 	
 	self.updateAsoundConfig(soundConfig['usedac'])	
 	.then(function (kali) {
-		self.updateKodiConfig(soundConfig['kalidelay']);
+		
+		var value;
+		if(soundConfig['kalidelay'])
+			value = "0.700000";
+		else
+			value = "0.000000";
+		
+		self.updateKodiConfig("audiodelay", value);
+		
 	})
 	
 	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully updated sound settings");
@@ -361,6 +375,21 @@ ControllerKodi.prototype.writeKodiOptimalisation = function (optimalisation)
 	self.xmlSed('guisoundmode', optimalisation['kodi_gui_sounds'], kodiSettings, false, false)	
 	.then(function (keepalive) {
 		self.xmlSed('streamsilence', optimalisation['kodi_audio_keepalive'], kodiSettings, false, false);
+	})
+	.then(function(webserverFallback) {
+		self.xmlSed('webserver[[:space:]]', optimalisation['kodi_enable_webserver'], kodiSettings, true, false);
+	})
+	.then(function (webserver) {
+		self.xmlSed('webserver>', optimalisation['kodi_enable_webserver'], kodiSettings, true, false);		
+	})
+	.then(function (webserverport) {
+		self.xmlSed('webserverport', optimalisation['kodi_webserver_port'], kodiSettings, false, true);
+	})
+	.then(function (webserveruser) {
+		self.xmlSed('webserverusername', optimalisation['kodi_webserver_username'], kodiSettings, false, true);
+	})
+	.then(function (webserverpass) {
+		self.xmlSed('webserverpassword', optimalisation['kodi_webserver_password'], kodiSettings, false, true);
 	})
 	
 	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully optimised Kodi");
@@ -380,7 +409,7 @@ ControllerKodi.prototype.xmlSed = function (setting, value, file, booleanText, d
 	else
 		castValue = value;
 	
-	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting + ">" + castValue + "</" + setting + ">|g' -i " + file;
+	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting.replace("[[:space:]]", "") + ">" + castValue + "</" + setting.replace("[[:space:]]", "") + ">|g' -i " + file;
 	
 	if(defaultAttribute)
 		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting + defaultAttributeText + ">" + castValue + "</" + setting + ">|g' -i " + file;
@@ -442,20 +471,18 @@ ControllerKodi.prototype.updateAsoundConfig = function (useDac)
 	return defer.promise;
 }
 
-ControllerKodi.prototype.updateKodiConfig = function (useKaliDelay)
+ControllerKodi.prototype.updateKodiConfig = function (setting, value)
 {
 	var self = this;
 	var defer = libQ.defer();
-	var command;
+	var castValue;
 	
-	if(useKaliDelay)
-	{
-		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*audiodelay.*|<audiodelay>0.700000</audiodelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
-	}
+	if(value == true || value == false)
+			castValue = ~~value;
 	else
-	{
-		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|.*audiodelay.*|<audiodelay>0.000000</audiodelay>|g' /home/kodi/.kodi/userdata/guisettings.xml";
-	}
+		castValue = value;
+	
+	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|<" + setting + ".*|<" + setting + ">" + castValue + "</" + setting + ">|g' /home/kodi/.kodi/userdata/guisettings.xml";
 	
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
