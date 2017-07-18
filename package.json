@@ -1,6 +1,6 @@
 {
   "name": "Kodi",
-  "version": "2.1.10",
+  "version": "2.2.1",
   "description": "Kodi installation script",
   "main": "index.js",
   "scripts": {

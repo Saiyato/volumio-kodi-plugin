@@ -487,6 +487,23 @@ ControllerKodi.prototype.patchAsoundConfig = function(useDac)
 	];
 	
 	self.createAsoundConfig(pluginName, replacementDictionary)
+	.then(function (touchFile) {
+		var edefer = libQ.defer();
+		exec("/bin/echo volumio | /usr/bin/sudo -S /bin/touch /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				console.log(stderr);
+				self.commandRouter.pushConsoleMessage('Could not touch config with error: ' + error);
+				self.commandRouter.pushToastMessage('error', "Configuration failed", "Failed to touch asound configuration file with error: " + error);
+				edefer.reject(new Error(error));
+			}
+			else
+				edefer.resolve();
+			
+			self.commandRouter.pushConsoleMessage('Touched asound config');
+			return edefer.promise;
+		});
+	})
 	.then(function (clear_current_asound_config) {
 		var edefer = libQ.defer();
 		exec("/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- '/#" + pluginName.toUpperCase() + "/,/#ENDOF" + pluginName.toUpperCase() + "/d' /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
