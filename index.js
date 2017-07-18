@@ -348,7 +348,7 @@ ControllerKodi.prototype.writeSoundConfig = function (soundConfig)
 	var self = this;
 	var defer = libQ.defer();
 	
-	self.updateAsoundConfig(soundConfig['usedac'])	
+	self.patchAsoundConfig(soundConfig['usedac'])	
 	.then(function (kali) {
 		
 		var value;
@@ -466,6 +466,84 @@ ControllerKodi.prototype.updateAsoundConfig = function (useDac)
 			console.log(stderr);
 		
 		defer.resolve();
+	});
+	
+	return defer.promise;
+}
+
+ControllerKodi.prototype.patchAsoundConfig = function(useDac)
+{
+	var self = this;
+	var defer = libQ.defer();
+	var pluginName = "Kodi";
+	var pluginCategory = "miscellanea";
+	
+	var cardIndex = useDac == true ? "1" : "0";
+	
+	// define the replacement dictionary
+	var replacementDictionary = [
+		{ placeholder: "${CTL_CARD_INDEX}", replacement: cardIndex },
+		{ placeholder: "${PCM_CARD_INDEX}", replacement: cardIndex }
+	];
+	
+	self.createAsoundConfig(pluginName, replacementDictionary)
+	.then(function (clear_current_asound_config) {
+		exec("/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- '/#" + pluginName.toUpperCase() + "/,/#ENDOF" + pluginName.toUpperCase() + "/d' /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				console.log(stderr);
+				self.commandRouter.pushConsoleMessage('Could not clear config with error: ' + error);
+				self.commandRouter.pushToastMessage('error', "Configuration failed", "Failed to update asound configuration with error: " + error);
+				defer.reject();
+			}
+			
+			self.commandRouter.pushConsoleMessage('Cleared previous asound config');
+		});
+	})
+	.then(function (copy_new_config) {
+		var cmd = "/bin/echo volumio | /usr/bin/sudo -S /bin/cat /data/plugins/" + pluginCategory + "/" + pluginName + "/asound.section >> /etc/asound.conf";
+		fs.writeFile(__dirname + "/" + pluginName.toLowerCase() + "_asound_patch.sh", cmd, 'utf8', function (err) {
+			if (err)
+			{
+				self.commandRouter.pushConsoleMessage('Could not write the script with error: ' + err);
+				defer.reject(new Error(err));
+			}
+		});
+	})
+	.then(function (executeScript) {
+		self.executeShellScript(__dirname + '/' + pluginName.toLowerCase() + '_asound_patch.sh');
+		defer.resolve();
+	});
+	
+	self.commandRouter.pushToastMessage('success', "Successful push", "Successfully pushed new ALSA configuration");
+	return defer.promise;
+}
+
+ControllerKodi.prototype.createAsoundConfig = function(pluginName, replacements)
+{
+	var self = this;
+	var defer = libQ.defer();
+	
+	fs.readFile(__dirname + "/templates/asound." + pluginName.toLowerCase(), 'utf8', function (err, data) {
+		if (err) {
+			defer.reject(new Error(err));
+		}
+
+		var tmpConf = data;
+		for (var rep in replacements)
+		{
+			tmpConf = tmpConf.replace(replacements[rep]["placeholder"], replacements[rep]["replacement"]);			
+		}
+			
+		fs.writeFile(__dirname + "/asound.section", tmpConf, 'utf8', function (err) {
+                if (err)
+				{
+					self.commandRouter.pushConsoleMessage('Could not write the script with error: ' + err);
+                    defer.reject(new Error(err));
+				}
+                else 
+					defer.resolve();
+        });
 	});
 	
 	return defer.promise;
