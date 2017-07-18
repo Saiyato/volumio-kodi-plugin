@@ -488,27 +488,36 @@ ControllerKodi.prototype.patchAsoundConfig = function(useDac)
 	
 	self.createAsoundConfig(pluginName, replacementDictionary)
 	.then(function (clear_current_asound_config) {
+		var edefer = libQ.defer();
 		exec("/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- '/#" + pluginName.toUpperCase() + "/,/#ENDOF" + pluginName.toUpperCase() + "/d' /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
 			if(error)
 			{
 				console.log(stderr);
 				self.commandRouter.pushConsoleMessage('Could not clear config with error: ' + error);
 				self.commandRouter.pushToastMessage('error', "Configuration failed", "Failed to update asound configuration with error: " + error);
-				defer.reject();
+				edefer.reject(new Error(error));
 			}
+			else
+				edefer.resolve();
 			
 			self.commandRouter.pushConsoleMessage('Cleared previous asound config');
+			return edefer.promise;
 		});
 	})
 	.then(function (copy_new_config) {
+		var edefer = libQ.defer();
 		var cmd = "/bin/echo volumio | /usr/bin/sudo -S /bin/cat /data/plugins/" + pluginCategory + "/" + pluginName + "/asound.section >> /etc/asound.conf";
 		fs.writeFile(__dirname + "/" + pluginName.toLowerCase() + "_asound_patch.sh", cmd, 'utf8', function (err) {
 			if (err)
 			{
 				self.commandRouter.pushConsoleMessage('Could not write the script with error: ' + err);
-				defer.reject(new Error(err));
+				edefer.reject(new Error(err));
 			}
+			else
+				edefer.resolve();
 		});
+		
+		return edefer.promise;
 	})
 	.then(function (executeScript) {
 		self.executeShellScript(__dirname + '/' + pluginName.toLowerCase() + '_asound_patch.sh');
@@ -545,6 +554,30 @@ ControllerKodi.prototype.createAsoundConfig = function(pluginName, replacements)
 					defer.resolve();
         });
 	});
+	
+	return defer.promise;
+}
+
+ControllerKodi.prototype.executeShellScript = function (shellScript)
+{
+	var self = this;
+	var defer = libQ.defer();
+
+	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sh " + shellScript;
+	self.logger.info("CMD: " + command);
+	
+	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
+		if(error)
+		{
+			console.log(stderr);
+			self.commandRouter.pushConsoleMessage('Could not execute script {' + shellScript + '} with error: ' + error);
+		}
+
+		self.commandRouter.pushConsoleMessage('Successfully executed script {' + shellScript + '}');
+		self.commandRouter.pushToastMessage('success', "Script executed", "Successfully executed script: " + shellScript);
+		defer.resolve();
+	});
+
 	
 	return defer.promise;
 }
