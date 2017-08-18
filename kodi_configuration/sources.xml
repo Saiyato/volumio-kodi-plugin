@@ -15,7 +15,7 @@
         <default pathversion="1"></default>
         <source>
             <name>[repo] Filmkodi Repo</name>
-            <path pathversion="1">http://kodi.filmkodi.com</path>
+            <path pathversion="1">http://mediarepos.net/kodistuff</path>
             <allowsharing>true</allowsharing>
         </source>
         <source>
