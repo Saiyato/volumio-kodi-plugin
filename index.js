@@ -19,7 +19,7 @@ function ControllerKodi(context)
 	this.logger = this.context.logger;
 	this.configManager = this.context.configManager;
 
-}
+};
 
 ControllerKodi.prototype.onVolumioStart = function()
 {
@@ -34,7 +34,7 @@ ControllerKodi.prototype.onVolumioStart = function()
 	//self.logger.info("Config file: " + this.configFile);
 	
 	return libQ.resolve();	
-}
+};
 
 ControllerKodi.prototype.getConfigurationFiles = function()
 {
@@ -144,7 +144,7 @@ ControllerKodi.prototype.getUIConfig = function() {
         uiconf.sections[0].content[3].value = self.config.get('hdmihotplug');
 		
 		uiconf.sections[1].content[0].value = self.config.get('usedac');
-		uiconf.sections[1].content[1].value = self.config.get('kalidelay');
+		uiconf.sections[1].content[1].value = self.config.get('audiodelay');
 		
 		uiconf.sections[2].content[0].value = self.config.get('kodi_gui_sounds');
 		uiconf.sections[2].content[1].value = self.config.get('kodi_audio_keepalive');
@@ -205,7 +205,7 @@ ControllerKodi.prototype.restartKodi = function ()
 	});
 
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.updateBootConfig = function (data) 
 {
@@ -273,7 +273,7 @@ ControllerKodi.prototype.updateBootConfig = function (data)
 	}
 
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.updateSoundConfig = function (data)
 {
@@ -281,7 +281,7 @@ ControllerKodi.prototype.updateSoundConfig = function (data)
 	var defer = libQ.defer();
 	
 	self.config.set('usedac', data['usedac']);
-	self.config.set('kalidelay', data['kalidelay']);
+	self.config.set('audiodelay', data['audiodelay']);
 	self.logger.info("Successfully updated sound configuration");
 	
 	self.writeSoundConfig(data)
@@ -294,7 +294,7 @@ ControllerKodi.prototype.updateSoundConfig = function (data)
 	})
 	
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.optimiseKodi = function (data)
 {
@@ -316,7 +316,7 @@ ControllerKodi.prototype.optimiseKodi = function (data)
 	})
 	
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.writeBootConfig = function (config) 
 {
@@ -341,7 +341,7 @@ ControllerKodi.prototype.writeBootConfig = function (config)
 	self.commandRouter.pushToastMessage('success', "Configuration update", "A reboot is required, changes have been made to /boot/config.txt");
 
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.writeSoundConfig = function (soundConfig)
 {
@@ -349,22 +349,15 @@ ControllerKodi.prototype.writeSoundConfig = function (soundConfig)
 	var defer = libQ.defer();
 	
 	self.patchAsoundConfig(soundConfig['usedac'])	
-	.then(function (kali) {
-		
-		var value;
-		if(soundConfig['kalidelay'])
-			value = "0.700000";
-		else
-			value = "0.000000";
-		
-		self.updateKodiConfig("audiodelay", value);
-		
+	.then(function (delay) {
+		self.updateKodiConfig("audiodelay", soundConfig['audiodelay']);
+		defer.resolve();
 	})
 	
 	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully updated sound settings");
 	
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.writeKodiOptimalisation = function (optimalisation)
 {
@@ -395,7 +388,7 @@ ControllerKodi.prototype.writeKodiOptimalisation = function (optimalisation)
 	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully optimised Kodi");
 	
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.xmlSed = function (setting, value, file, booleanText, defaultAttribute)
 {
@@ -422,7 +415,7 @@ ControllerKodi.prototype.xmlSed = function (setting, value, file, booleanText, d
 	});
 	
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 {
@@ -444,32 +437,7 @@ ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 	});
 	
 	return defer.promise;
-}
-
-ControllerKodi.prototype.updateAsoundConfig = function (useDac)
-{
-	var self = this;
-	var defer = libQ.defer();
-	var command;
-	
-	if(useDac)
-	{
-		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|0|1|g' /etc/asound.conf";
-	}
-	else
-	{
-		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|1|0|g' /etc/asound.conf";
-	}
-	
-	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
-		if(error)
-			console.log(stderr);
-		
-		defer.resolve();
-	});
-	
-	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.patchAsoundConfig = function(useDac)
 {
@@ -543,7 +511,7 @@ ControllerKodi.prototype.patchAsoundConfig = function(useDac)
 	
 	self.commandRouter.pushToastMessage('success', "Successful push", "Successfully pushed new ALSA configuration");
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.createAsoundConfig = function(pluginName, replacements)
 {
@@ -573,7 +541,7 @@ ControllerKodi.prototype.createAsoundConfig = function(pluginName, replacements)
 	});
 	
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.executeShellScript = function (shellScript)
 {
@@ -597,7 +565,7 @@ ControllerKodi.prototype.executeShellScript = function (shellScript)
 
 	
 	return defer.promise;
-}
+};
 
 ControllerKodi.prototype.updateKodiConfig = function (setting, value)
 {
@@ -618,4 +586,4 @@ ControllerKodi.prototype.updateKodiConfig = function (setting, value)
 	});
 	
 	return defer.promise;
-}
+};

@@ -62,23 +62,25 @@
         "label": "TRANSLATE.KODI.SAVE",
         "data": [
 		  "usedac",
-		  "kalidelay"
+		  "audiodelay"
         ]
       },
       "content": [
 		{
           "id":"usedac",
           "element": "switch",
-          "label": "TRANSLATE.KODI.USEDAC",
+          "label": "TRANSLATE.KODI.USEDAC",		  
 		  "doc": "TRANSLATE.KODI.D_USEDAC",
           "value": false
         },
 		{
-          "id":"kalidelay",
-          "element": "switch",
-          "label": "TRANSLATE.KODI.KALIDELAY",
-		  "doc": "TRANSLATE.KODI.D_KALIDELAY",
-          "value": false
+          "id":"audiodelay",
+          "type":"text",
+          "element": "input",
+          "label": "TRANSLATE.KODI.AUDIODELAY",
+		  "description": "e.g. Kali = 0.700000",
+		  "doc": "TRANSLATE.KODI.D_AUDIODELAY",
+          "value": "0.000000"
         }
       ]
    },

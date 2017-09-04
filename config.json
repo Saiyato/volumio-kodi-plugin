@@ -19,9 +19,9 @@
     "type": "boolean",
     "value": false
   },
- "kalidelay": {
-    "type": "boolean",
-    "value": false
+ "audiodelay": {
+    "type": "string",
+    "value": "0.700000"
   },
  "kodi_gui_sounds": {
     "type": "boolean",
