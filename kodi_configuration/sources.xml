@@ -14,13 +14,8 @@
     <files>
         <default pathversion="1"></default>
         <source>
-            <name>[repo] Filmkodi Repo</name>
+            <name>[repo] Smash Repo</name>
             <path pathversion="1">http://mediarepos.net/kodistuff</path>
-            <allowsharing>true</allowsharing>
-        </source>
-        <source>
-            <name>[repo] Fusion</name>
-            <path pathversion="1">http://fusion.tvaddons.ag/</path>
             <allowsharing>true</allowsharing>
         </source>
         <source>
@@ -31,11 +26,6 @@
         <source>
             <name>[repo] Muckys</name>
             <path pathversion="1">http://muckys.mediaportal4kodi.ml/</path>
-            <allowsharing>true</allowsharing>
-        </source>
-        <source>
-            <name>[repo] Origin Repo</name>
-            <path pathversion="1">http://originent.net16.net/originrepo/</path>
             <allowsharing>true</allowsharing>
         </source>
         <source>
