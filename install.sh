@@ -76,25 +76,11 @@ if [ ! -f $INSTALLING ]; then
 
 		# Add input rules
 		echo "Adding input rules"
-		rm /etc/udev/rules.d/99-input.rules
-		echo "
-		SUBSYSTEM==\"input\", GROUP=\"input\", MODE=\"0660\"
-		KERNEL==\"tty[0-9]*\", GROUP=\"tty\", MODE=\"0660\"" | sudo tee -a /etc/udev/rules.d/99-input.rules
+		wget -O /etc/udev/rules.d/99-input.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/99-input.rules
 
 		# Add input permissions
 		echo "Adding input permissions"
-		rm /etc/udev/rules.d/10-permissions.rules
-		echo "
-		# input
-		KERNEL==\"mouse*|mice|event*\",   MODE=\"0660\",   GROUP=\"input\"
-		KERNEL==\"ts[0-9]*|uinput\",      MODE=\"0660\",   GROUP=\"input\"
-		KERNEL==\"js[0-9]*\",             MODE=\"0660\",   GROUP=\"input\"
-		# tty
-		KERNEL==\"tty[0-9]*\",            MODE=\"0666\"
-		# vchiq / vcio / vcsm
-		SUBSYSTEM==\"vchiq\",             GROUP=\"video\", MODE=\"0660\"
-		SUBSYSTEM==\"bcm2708_vcio\",      GROUP=\"video\", MODE=\"0660\"
-		SUBSYSTEM==\"vc-sm\",             GROUP=\"video\", MODE=\"0660\"" | sudo tee -a /etc/udev/rules.d/10-permissions.rules
+		wget -O /etc/udev/rules.d/10-permissions.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/10-permissions.rules
 
 		# Map the EGL libraries
 		chown root:video /dev/vchiq /dev/vcio /dev/vcsm
@@ -123,29 +109,7 @@ if [ ! -f $INSTALLING ]; then
 #ENDOFKODI" >> /etc/asound.conf
 		
 		# Add the systemd unit
-		rm /etc/systemd/system/kodi.service	
-		echo "# Kodi as-a-service
-		[Unit]
-		Description = Kodi Media Center
-
-		# if you don't need the MySQL DB backend, this should be sufficient
-		After = systemd-user-sessions.service network.target sound.target
-
-		# if you need the MySQL DB backend, use this block instead of the previous
-		#After = systemd-user-sessions.service network.target sound.target mysql.service
-		#Wants = mysql.service
-
-		[Service]
-		User = kodi
-		#Group = root
-		Type = simple
-		#PAMName = login # you might want to try this one, did not work on all systems
-		ExecStart = /usr/bin/kodi-standalone -- :0 -nolisten tcp vt7
-		Restart = on-abort
-		RestartSec = 5
-
-		[Install]
-		WantedBy = multi-user.target" | sudo tee -a /etc/systemd/system/kodi.service
+		wget -O /etc/systemd/system/kodi.service https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/unit/kodi.service
 		echo "Added the systemd unit"
 
 		echo "[Actions for kodi user]

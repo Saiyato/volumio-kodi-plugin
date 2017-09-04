@@ -1,9 +1,11 @@
 #!/bin/bash
 echo "Uninstalling Kodi configs"
 
+# Remove policies
 rm /etc/udev/rules.d/99-input.rules
 rm /etc/udev/rules.d/10-permissions.rules
 rm /etc/ld.so.conf.d/00-vmcs.conf
+rm /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla
 ldconfig
 
 # Update the GPU memory
