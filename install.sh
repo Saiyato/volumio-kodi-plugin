@@ -112,12 +112,7 @@ if [ ! -f $INSTALLING ]; then
 		wget -O /etc/systemd/system/kodi.service https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/unit/kodi.service
 		echo "Added the systemd unit"
 
-		echo "[Actions for kodi user]
-		Identity=unix-user:kodi
-		Action=org.freedesktop.upower.*;org.freedesktop.consolekit.system.*;org.freedesktop.udisks.*;org.freedesktop.login1.*
-		ResultAny=yes
-		ResultInactive=yes
-		ResultActive=yes" | sudo tee /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla
+		wget -O /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/50-kodi-actions.pkla
 		echo "Added policykit actions for kodi (access usb drives, reboot)"
 		
 		# Let's throw in some repo URLs
