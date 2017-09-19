@@ -365,6 +365,9 @@ ControllerKodi.prototype.writeKodiOptimalisation = function (optimalisation)
 	var defer = libQ.defer();
 	var kodiSettings = '/home/kodi/.kodi/userdata/guisettings.xml';
 	
+	var userDefault = false;
+	var passDefault = false;
+	
 	self.xmlSed('guisoundmode', optimalisation['kodi_gui_sounds'], kodiSettings, false, false)	
 	.then(function (keepalive) {
 		self.xmlSed('streamsilence', optimalisation['kodi_audio_keepalive'], kodiSettings, false, false);
@@ -376,13 +379,19 @@ ControllerKodi.prototype.writeKodiOptimalisation = function (optimalisation)
 		self.xmlSed('webserver>', optimalisation['kodi_enable_webserver'], kodiSettings, true, false);		
 	})
 	.then(function (webserverport) {
-		self.xmlSed('webserverport', optimalisation['kodi_webserver_port'], kodiSettings, false, true);
+		self.xmlSed('webserverport', optimalisation['kodi_webserver_port'], kodiSettings, false, false);
 	})
 	.then(function (webserveruser) {
-		self.xmlSed('webserverusername', optimalisation['kodi_webserver_username'], kodiSettings, false, true);
+		if(webserveruser == 'kodi')
+			userDefault = true;
+			
+		self.xmlSed('webserverusername', optimalisation['kodi_webserver_username'], kodiSettings, false, userDefault);
 	})
 	.then(function (webserverpass) {
-		self.xmlSed('webserverpassword', optimalisation['kodi_webserver_password'], kodiSettings, false, true);
+		if(webserverpass == '')
+			passDefault = true;
+		
+		self.xmlSed('webserverpassword', optimalisation['kodi_webserver_password'], kodiSettings, false, passDefault);
 	})
 	
 	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully optimised Kodi");
@@ -402,10 +411,10 @@ ControllerKodi.prototype.xmlSed = function (setting, value, file, booleanText, d
 	else
 		castValue = value;
 	
-	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting.replace("[[:space:]]", "") + ">" + castValue + "</" + setting.replace("[[:space:]]", "") + ">|g' -i " + file;
+	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting.replace("[[:space:]]", "").replace(">", "") + ">" + castValue + "</" + setting.replace("[[:space:]]", "").replace(">", "") + ">|g' -i " + file;
 	
 	if(defaultAttribute)
-		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting + defaultAttributeText + ">" + castValue + "</" + setting + ">|g' -i " + file;
+		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting.replace(">", "") + defaultAttributeText + ">" + castValue + "</" + setting.replace(">", "") + ">|g' -i " + file;
 		
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
