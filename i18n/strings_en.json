@@ -13,6 +13,7 @@
 "KODISOUNDTITLE":"Sound settings",	
 	"USEDAC":"Enable DAC output for Kodi",
 	"D_USEDAC":"Use I2S DAC for Kodi",
+	"DD_USEDAC":"If you are using a HifiBerry AMP, you need to disable the Volumio startup sound.",
 	"AUDIODELAY":"Configure sound delay (in seconds; decimal separator is a dot)",
 	"D_AUDIODELAY":"Set delay in Kodi your soundcard (e.g. Kali = 0.7s)",
 "KODI_SETTINGS":"Kodi optimalisation",

@@ -13,6 +13,7 @@
 "KODISOUNDTITLE":"Ustawienia dźwięku",	
 	"USEDAC":"Włącz wyjście DAC dla Kodi",
 	"D_USEDAC":"Używa wyjścia I2S DAC do odtwarzania dźwieku w Kodi",
+	"DD_USEDAC":"If you are using a HifiBerry AMP, you need to disable the Volumio startup sound.",
 	"AUDIODELAY":"Konfiguracja opóźnienia",
 	"D_AUDIODELAY":"Ustawienie opóźnienia (e.g. Kali reclocker = 0.7s)",
 "KODI_SETTINGS":"Optymalizacja Kodi",

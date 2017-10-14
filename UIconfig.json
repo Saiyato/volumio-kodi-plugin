@@ -71,6 +71,7 @@
           "element": "switch",
           "label": "TRANSLATE.KODI.USEDAC",		  
 		  "doc": "TRANSLATE.KODI.D_USEDAC",
+		  "description": "TRANSLATE.KODI.DD_USEDAC",
           "value": false
         },
 		{
