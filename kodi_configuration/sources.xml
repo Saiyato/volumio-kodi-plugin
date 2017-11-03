@@ -15,7 +15,7 @@
         <default pathversion="1"></default>
         <source>
             <name>[repo] Smash Repo</name>
-            <path pathversion="1">http://mediarepos.net/kodistuff</path>
+            <path pathversion="1">http://mediarepos.org/kodistuff</path>
             <allowsharing>true</allowsharing>
         </source>
         <source>
@@ -36,6 +36,16 @@
         <source>
             <name>[repo] UFO Repo</name>
             <path pathversion="1">http://theuforepo.us/repo/</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>[repo] Hack my Kodi</name>
+            <path pathversion="1">http://repo.hackmykodi.com</path>
+            <allowsharing>true</allowsharing>
+        </source>
+		<source>
+            <name>[repo] Rising Tides</name>
+            <path pathversion="1">http://mullafabz.net.rw/Repository/</path>
             <allowsharing>true</allowsharing>
         </source>
     </files>
