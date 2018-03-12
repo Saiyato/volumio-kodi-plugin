@@ -26,6 +26,7 @@ This will download the installation script.
 sh volumio_installer.sh
 ```
 
+## Quick installation guide
 The zip-file contains all the scripts you need to install Kodi on top of any Volumio 2.x image. A settings page has been added to allow for easy configuration of the config.txt settings for Kodi and some specific sound settings in case you want to use your DAC for sound output.
 
 If you enable the plugin in the plugins section in Volumio it will automatically start, you might want to reboot first after installation.
