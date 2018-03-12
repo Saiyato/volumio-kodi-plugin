@@ -1,6 +1,19 @@
 # volumio-kodi-plugin
 Installation script for Kodi on Volumio 2.x images (Raspberry Pi only)
 
+## Lazy installation of unsanctioned versions
+
+1. SSH into server
+2. Execute the below command:
+```
+sudo wget -O volumio_installer.sh https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/volumio_installer.sh
+```
+This will download the installation script.
+3. Execute the script (DO NOT USE sudo!) you've just downloaded using the below command:
+```
+sh volumio_installer.sh
+```
+
 The zip-file contains all the scripts you need to install Kodi on top of any Volumio 2.x image. A settings page has been added to allow for easy configuration of the config.txt settings for Kodi and some specific sound settings in case you want to use your DAC for sound output.
 
 If you enable the plugin in the plugins section in Volumio it will automatically start, you might want to reboot first after installation.

@@ -83,7 +83,7 @@ if [ ! -f $INSTALLING ]; then
 		wget -O /etc/udev/rules.d/10-permissions.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/10-permissions.rules
 
 		# Map the EGL libraries
-		chown root:video /dev/vchiq /dev/vcio /dev/vcsm
+		# chown root:video /dev/vchiq /dev/vcio /dev/vcsm /opt/vc/bin/tvservice
 		rm /etc/ld.so.conf.d/00-vmcs.conf
 		echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
 		ldconfig
