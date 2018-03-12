@@ -43,5 +43,26 @@ The sound settings section allows you to override ALSA's default soundcard, thus
 The Kodi optimalisation sections allows you to edit some Kodi sound configuration (requires a restart of Kodi) settings.
 ![Alt text](/images/kodi_optimalisation.png?raw=true "Kodi sound settings")
 
+### IPTV Simple Client
+If you want to use the IPTV Simple Client add-on, follow the next steps:
+
+1. Update the package list
+`
+sudo apt-get update
+`
+2. Install the pvr client
+`
+sudo apt-get install -y kodi-pvr-iptvsimple
+`
+3. Restart Kodi
+
+4. Enable the add-on by going into add-ons/all/iptv simple client
+
+5. Load your playlist
+
+6. Restart the add-on
+
+7. Enjoy!
+
 Supported devices:
 - Raspberry Pi A/B/A+/B+/2B/3B/Zero
