@@ -191,7 +191,7 @@ ControllerKodi.prototype.restartKodi = function ()
 	var self = this;
 	var defer=libQ.defer();
 
-	exec("/bin/echo volumio | /usr/bin/sudo -S /bin/systemctl restart kodi", {uid:1000,gid:1000}, function (error, stdout, stderr) {
+	exec("/usr/bin/sudo /bin/systemctl restart kodi", {uid:1000,gid:1000}, function (error, stdout, stderr) {
 		if (error !== null) {
 			self.commandRouter.pushConsoleMessage('The following error occurred while starting KODI: ' + error);
 			self.commandRouter.pushToastMessage('error', "Restart failed", "Restarting Kodi failed with error: " + error);

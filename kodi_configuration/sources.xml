@@ -14,8 +14,8 @@
     <files>
         <default pathversion="1"></default>
         <source>
-            <name>[repo] Blamo Repo</name>
-            <path pathversion="1">http://repo.mrblamo.xyz/</path>
+            <name>[repo] ExodusRedux Repository</name>
+            <path pathversion="1">https://i-a-c.github.io</path>
             <allowsharing>true</allowsharing>
         </source>
         <source>
@@ -29,8 +29,8 @@
             <allowsharing>true</allowsharing>
         </source>
 		<source>
-            <name>[repo] Hack my Kodi</name>
-            <path pathversion="1">http://repo.hackmykodi.com</path>
+            <name>[repo] Zomboided</name>
+            <path pathversion="1">https://troypoint.com/repo</path>
             <allowsharing>true</allowsharing>
         </source>
     </files>

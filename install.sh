@@ -5,9 +5,11 @@ INSTALLING="/home/volumio/kodi-plugin.installing"
 if [ ! -f $INSTALLING ]; then
 
 	touch $INSTALLING
-	echo "Detecting cpu"
-	cpu=$(lscpu | awk 'FNR == 1 {print $2}')
-	echo "cpu: " $cpu
+	echo "Detecting architecture"
+	arch=$(lscpu | awk 'FNR == 1 {print $2}')
+	# See table here: https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
+	rev=$(cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}')
+	echo "arch: " $arch
 
 	# Only add the repo if it doesn't already exist -> pipplware = Krypton 17.3 (at time of writing: 02-06-2017)
 	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*.list;
@@ -29,16 +31,16 @@ if [ ! -f $INSTALLING ]; then
 		apt-get update
 
 		# armv6l
-		if [ $cpu = "armv6l" ]; then
+		if [ $arch = "armv6l" ]; then
 			echo "Installation is not recommended, performance may be disappointing. Continuing nonetheless... Be sure to grab some coffee, do laundry or... (This might take a while)"
 		
 		# armv7l
-		elif [ $cpu = "armv7l" ]; then
+		elif [ $arch = "armv7l" ] && [ ! $cpu = "a03111" ] && [ ! $cpu = "b03111" ] && [ ! $cpu = "c03111" ]; then
 			echo "Continuing installation, this may take a while, you can grab a cup of coffee (or more)"
 		
 		# unsupported device (afaik)
 		else
-			echo "Sorry, your device is not (yet) supported!"
+			echo "Sorry, your device is not (yet) supported! This especially applies to Raspberry Pi 4's, since they require Debian Buster to function."
 			echo "Exiting now..."
 			echo "plugininstallend"
 			exit
@@ -107,6 +109,7 @@ if [ ! -f $INSTALLING ]; then
 	defaults.ctl.card ${CTL_CARD_INDEX}
 	defaults.pcm.card ${PCM_CARD_INDEX}
 #ENDOFKODI" >> /etc/asound.conf
+		chown volumio:volumio /etc/asound.conf
 		
 		# Add the systemd unit
 		wget -O /etc/systemd/system/kodi.service https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/unit/kodi.service

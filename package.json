@@ -1,7 +1,7 @@
 {
   "name": "kodi",
-  "version": "2.2.11",
-  "description": "Installs Kodi Krypton on top of Volumio.",
+  "version": "2.2.12",
+  "description": "Installs Kodi on top of Volumio 2.x, for the moment only Krypton is supported due to the use of Debian Jessie.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
