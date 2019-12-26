@@ -11,7 +11,7 @@ if [ ! -f $INSTALLING ]; then
 	rev=$(cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}')
 	echo "arch: " $arch
 
-	# Only add the repo if it doesn't already exist -> pipplware = Krypton 17.3 (at time of writing: 02-06-2017)
+	# Only add the repo if it doesn't already exist -> pipplware = Krypton 17.4 (at time of writing: 25-12-2019) and Leia 18.5 (for Buster only!)
 	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*.list;
 	then
 		echo "deb http://pipplware.pplware.pt/pipplware/dists/jessie/main/binary /" | sudo tee -a /etc/apt/sources.list.d/pipplware.list
@@ -65,6 +65,7 @@ if [ ! -f $INSTALLING ]; then
 		#adduser kodi
 		useradd --create-home kodi
 		usermod -aG audio,video,input,dialout,plugdev,tty kodi
+		usermod -aG kodi volumio
 		
 		# Link to /data/configuration/miscellanea/Kodi/Configuration
 		mkdir /data/configuration/miscellanea/kodi
@@ -78,11 +79,13 @@ if [ ! -f $INSTALLING ]; then
 		
 		# Add input rules
 		echo "Adding input rules"
-		wget -O /etc/udev/rules.d/99-input.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/99-input.rules
+		#wget -O /etc/udev/rules.d/99-input.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/99-input.rules
+		cp -f /data/plugins/miscellanea/kodi/policies/99-input.rules /etc/udev/rules.d/99-input.rules
 
 		# Add input permissions
 		echo "Adding input permissions"
-		wget -O /etc/udev/rules.d/10-permissions.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/10-permissions.rules
+		#wget -O /etc/udev/rules.d/10-permissions.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/10-permissions.rules
+		cp -f /data/plugins/miscellanea/kodi/policies/10-permissions.rules /etc/udev/rules.d/10-permissions.rules
 
 		# Map the EGL libraries
 		# chown root:video /dev/vchiq /dev/vcio /dev/vcsm /opt/vc/bin/tvservice
@@ -90,8 +93,12 @@ if [ ! -f $INSTALLING ]; then
 		echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
 		ldconfig
 
-		# Update the boot config
-		CONFIG="/boot/config.txt"
+		# Update the boot config; use userconfig for forward compatibility
+		CONFIG="/boot/userconfig.txt"
+		if [ ! -f $CONFIG ]; then
+			touch $CONFIG
+			sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i /boot/config.txt
+		fi
 		
 		echo "Updating GPU memory to 256MB/144MB/112MB..."
 		sed '/^gpu_mem_1024=/{h;s/=.*/=256/};${x;/^$/{s//gpu_mem_1024=256/;H};x}' -i $CONFIG
@@ -112,10 +119,12 @@ if [ ! -f $INSTALLING ]; then
 		chown volumio:volumio /etc/asound.conf
 		
 		# Add the systemd unit
-		wget -O /etc/systemd/system/kodi.service https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/unit/kodi.service
+		# wget -O /etc/systemd/system/kodi.service https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/unit/kodi.service
+		cp -f /data/plugins/miscellanea/kodi/unit/kodi.service /etc/systemd/system/kodi.service
 		echo "Added the systemd unit"
 
-		wget -O /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/50-kodi-actions.pkla
+		#wget -O /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/50-kodi-actions.pkla
+		cp -f /data/plugins/miscellanea/kodi/policies/50-kodi-actions.pkla /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla
 		echo "Added policykit actions for kodi (access usb drives, reboot)"
 		
 		# Let's throw in some repo URLs

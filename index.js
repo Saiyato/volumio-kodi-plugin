@@ -323,22 +323,22 @@ ControllerKodi.prototype.writeBootConfig = function (config)
 	var self = this;
 	var defer = libQ.defer();
 	
-	self.updateConfigFile("gpu_mem_1024", self.config.get('gpu_mem_1024'), "/boot/config.txt")
+	self.updateConfigFile("gpu_mem_1024", self.config.get('gpu_mem_1024'), "/boot/userconfig.txt")
 	.then(function (gpu512) {
-		self.updateConfigFile("gpu_mem_512", self.config.get('gpu_mem_512'), "/boot/config.txt");
+		self.updateConfigFile("gpu_mem_512", self.config.get('gpu_mem_512'), "/boot/userconfig.txt");
 	})
 	.then(function (gpu256) {
-		self.updateConfigFile("gpu_mem_256", self.config.get('gpu_mem_256'), "/boot/config.txt");
+		self.updateConfigFile("gpu_mem_256", self.config.get('gpu_mem_256'), "/boot/userconfig.txt");
 	})
 	.then(function (hdmi) {
-		self.updateConfigFile("hdmi_force_hotplug", self.config.get('hdmihotplug'), "/boot/config.txt");
+		self.updateConfigFile("hdmi_force_hotplug", self.config.get('hdmihotplug'), "/boot/userconfig.txt");
 	})
 	.fail(function(e)
 	{
 		defer.reject(new Error());
 	});
 	
-	self.commandRouter.pushToastMessage('success', "Configuration update", "A reboot is required, changes have been made to /boot/config.txt");
+	self.commandRouter.pushToastMessage('success', "Configuration update", "A reboot is required, changes have been made to /boot/userconfig.txt");
 
 	return defer.promise;
 };
@@ -411,10 +411,10 @@ ControllerKodi.prototype.xmlSed = function (setting, value, file, booleanText, d
 	else
 		castValue = value;
 	
-	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting.replace("[[:space:]]", "").replace(">", "") + ">" + castValue + "</" + setting.replace("[[:space:]]", "").replace(">", "") + ">|g' -i " + file;
+	var command = "/bin/sed 's|<" + setting + ".*|<" + setting.replace("[[:space:]]", "").replace(">", "") + ">" + castValue + "</" + setting.replace("[[:space:]]", "").replace(">", "") + ">|g' -i " + file;
 	
 	if(defaultAttribute)
-		command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed 's|<" + setting + ".*|<" + setting.replace(">", "") + defaultAttributeText + ">" + castValue + "</" + setting.replace(">", "") + ">|g' -i " + file;
+		command = "/bin/sed 's|<" + setting + ".*|<" + setting.replace(">", "") + defaultAttributeText + ">" + castValue + "</" + setting.replace(">", "") + ">|g' -i " + file;
 		
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
@@ -437,7 +437,7 @@ ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 	else
 		castValue = value;
 	
-	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed '/^" + setting + "=/{h;s/=.*/=" + castValue + "/};${x;/^$/{s//" + setting + "=" + castValue + "/;H};x}' -i " + file;
+	var command = "/usr/bin/sudo /bin/sed '/^" + setting + "=/{h;s/=.*/=" + castValue + "/};${x;/^$/{s//" + setting + "=" + castValue + "/;H};x}' -i " + file;
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
 			console.log(stderr);
@@ -465,7 +465,7 @@ ControllerKodi.prototype.patchAsoundConfig = function(useDac)
 	self.createAsoundConfig(pluginName, replacementDictionary)
 	.then(function (touchFile) {
 		var edefer = libQ.defer();
-		exec("/bin/echo volumio | /usr/bin/sudo -S /bin/touch /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+		exec("/bin/touch /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
 			if(error)
 			{
 				console.log(stderr);
@@ -482,7 +482,7 @@ ControllerKodi.prototype.patchAsoundConfig = function(useDac)
 	})
 	.then(function (clear_current_asound_config) {
 		var edefer = libQ.defer();
-		exec("/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- '/#" + pluginName.toUpperCase() + "/,/#ENDOF" + pluginName.toUpperCase() + "/d' /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+		exec("/bin/sed -i -- '/#" + pluginName.toUpperCase() + "/,/#ENDOF" + pluginName.toUpperCase() + "/d' /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
 			if(error)
 			{
 				console.log(stderr);
@@ -499,7 +499,7 @@ ControllerKodi.prototype.patchAsoundConfig = function(useDac)
 	})
 	.then(function (copy_new_config) {
 		var edefer = libQ.defer();
-		var cmd = "/bin/echo volumio | /usr/bin/sudo -S /bin/cat " + __dirname + "/asound.section >> /etc/asound.conf";
+		var cmd = "/bin/cat " + __dirname + "/asound.section >> /etc/asound.conf";
 		fs.writeFile(__dirname + "/" + pluginName.toLowerCase() + "_asound_patch.sh", cmd, 'utf8', function (err) {
 			if (err)
 			{
@@ -556,7 +556,7 @@ ControllerKodi.prototype.executeShellScript = function (shellScript)
 	var self = this;
 	var defer = libQ.defer();
 
-	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sh " + shellScript;
+	var command = "/bin/sh " + shellScript;
 	self.logger.info("CMD: " + command);
 	
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
@@ -586,7 +586,7 @@ ControllerKodi.prototype.updateKodiConfig = function (setting, value)
 	else
 		castValue = value;
 	
-	var command = "/bin/echo volumio | /usr/bin/sudo -S /bin/sed -i -- 's|<" + setting + ".*|<" + setting + ">" + castValue + "</" + setting + ">|g' /home/kodi/.kodi/userdata/guisettings.xml";
+	var command = "/bin/sed -i -- 's|<" + setting + ".*|<" + setting + ">" + castValue + "</" + setting + ">|g' /home/kodi/.kodi/userdata/guisettings.xml";
 	
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
