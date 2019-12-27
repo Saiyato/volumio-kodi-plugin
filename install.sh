@@ -35,7 +35,7 @@ if [ ! -f $INSTALLING ]; then
 			echo "Installation is not recommended, performance may be disappointing. Continuing nonetheless... Be sure to grab some coffee, do laundry or... (This might take a while)"
 		
 		# armv7l
-		elif [ $arch = "armv7l" ] && [ ! $cpu = "a03111" ] && [ ! $cpu = "b03111" ] && [ ! $cpu = "c03111" ]; then
+		elif [ $arch = "armv7l" ] && [ ! $rev = "a03111" ] && [ ! $rev = "b03111" ] && [ ! $rev = "c03111" ]; then
 			echo "Continuing installation, this may take a while, you can grab a cup of coffee (or more)"
 		
 		# unsupported device (afaik)
@@ -56,7 +56,8 @@ if [ ! -f $INSTALLING ]; then
 			echo "Waiting for other software managers to finish..."
 				sleep 2
 			done
-			apt-get -y install gdb fbset kodi
+			apt-get -y install gdb fbset openvpn sysvinit psmisc kodi
+			ln -fs /usr/sbin/openvpn /usr/bin/openvpn
 		fi
 		
 		# Prepare usergroups and configure user
