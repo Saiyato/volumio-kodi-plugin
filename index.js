@@ -350,7 +350,8 @@ ControllerKodi.prototype.writeSoundConfig = function (soundConfig)
 	
 	self.patchAsoundConfig(soundConfig['usedac'])	
 	.then(function (delay) {
-		self.updateKodiConfig("audiodelay", soundConfig['audiodelay']);
+		//self.updateKodiConfig("audiodelay", soundConfig['audiodelay']);
+		self.xmlSed('audiodelay', soundConfig['audiodelay'], kodiSettings, false, false);
 		defer.resolve();
 	})
 	
@@ -437,7 +438,7 @@ ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 	else
 		castValue = value;
 	
-	var command = "/usr/bin/sudo /bin/sed '/^" + setting + "=/{h;s/=.*/=" + castValue + "/};${x;/^$/{s//" + setting + "=" + castValue + "/;H};x}' -i " + file;
+	var command = 'TMP=$(sed \'/^' + setting + '=/{h;s/=.*/=' + castValue + '/};${x;/^$/{s//' + setting + '=' + castValue + '/;H};x}\' ' + file + ') && echo "$TMP" > ' + file;
 	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
 		if(error)
 			console.log(stderr);

@@ -42,6 +42,7 @@ if [ ! -f $INSTALLING ]; then
 		else
 			echo "Sorry, your device is not (yet) supported! This especially applies to Raspberry Pi 4's, since they require Debian Buster to function."
 			echo "Exiting now..."
+			rm $INSTALLING
 			echo "plugininstallend"
 			exit
 		fi
@@ -56,7 +57,7 @@ if [ ! -f $INSTALLING ]; then
 			echo "Waiting for other software managers to finish..."
 				sleep 2
 			done
-			apt-get -y install gdb fbset openvpn sysvinit psmisc kodi
+			apt-get -y install gdb fbset kodi
 			ln -fs /usr/sbin/openvpn /usr/bin/openvpn
 		fi
 		
@@ -98,6 +99,8 @@ if [ ! -f $INSTALLING ]; then
 		CONFIG="/boot/userconfig.txt"
 		if [ ! -f $CONFIG ]; then
 			touch $CONFIG
+			# Insert empty line at the end of the file, otherwise the following sed commands will fail
+			sed -i -e '$a\' $CONFIG
 			sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i /boot/config.txt
 		fi
 		
@@ -134,6 +137,7 @@ if [ ! -f $INSTALLING ]; then
 		wget -O /home/kodi/.kodi/userdata/sources.xml https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/kodi_configuration/sources.xml
 		
 		chown kodi:kodi /home/kodi/.kodi/userdata/guisettings.xml
+		chmod 664 /home/kodi/.kodi/userdata/guisettings.xml
 		chown kodi:kodi /home/kodi/.kodi/userdata/sources.xml
 		
 		# disable the pipplware archive/ppa (don't delete it if you wanna update manually)
