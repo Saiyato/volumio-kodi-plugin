@@ -323,22 +323,22 @@ ControllerKodi.prototype.writeBootConfig = function (config)
 	var self = this;
 	var defer = libQ.defer();
 	
-	self.updateConfigFile("gpu_mem_1024", self.config.get('gpu_mem_1024'), "/boot/userconfig.txt")
+	self.updateConfigFile("gpu_mem_1024", self.config.get('gpu_mem_1024'), "/boot/config.txt")
 	.then(function (gpu512) {
-		self.updateConfigFile("gpu_mem_512", self.config.get('gpu_mem_512'), "/boot/userconfig.txt");
+		self.updateConfigFile("gpu_mem_512", self.config.get('gpu_mem_512'), "/boot/config.txt");
 	})
 	.then(function (gpu256) {
-		self.updateConfigFile("gpu_mem_256", self.config.get('gpu_mem_256'), "/boot/userconfig.txt");
+		self.updateConfigFile("gpu_mem_256", self.config.get('gpu_mem_256'), "/boot/config.txt");
 	})
 	.then(function (hdmi) {
-		self.updateConfigFile("hdmi_force_hotplug", self.config.get('hdmihotplug'), "/boot/userconfig.txt");
+		self.updateConfigFile("hdmi_force_hotplug", self.config.get('hdmihotplug'), "/boot/config.txt");
 	})
 	.fail(function(e)
 	{
 		defer.reject(new Error());
 	});
 	
-	self.commandRouter.pushToastMessage('success', "Configuration update", "A reboot is required, changes have been made to /boot/userconfig.txt");
+	self.commandRouter.pushToastMessage('success', "Configuration update", "A reboot is required, changes have been made to /boot/config.txt");
 
 	return defer.promise;
 };

@@ -58,7 +58,8 @@ if [ ! -f $INSTALLING ]; then
 				sleep 2
 			done
 			apt-get -y install gdb fbset kodi
-			ln -fs /usr/sbin/openvpn /usr/bin/openvpn
+			# apt-get -y install gdb fbset kodi openvpn sysvinit psmisc 
+			# ln -fs /usr/sbin/openvpn /usr/bin/openvpn
 		fi
 		
 		# Prepare usergroups and configure user
@@ -96,14 +97,15 @@ if [ ! -f $INSTALLING ]; then
 		ldconfig
 
 		# Update the boot config; use userconfig for forward compatibility
-		CONFIG="/boot/userconfig.txt"
-		if [ ! -f $CONFIG ]; then
-			touch $CONFIG
-			# Insert empty line at the end of the file, otherwise the following sed commands will fail
-			sed -i -e '$a\' $CONFIG
-			sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i /boot/config.txt
-		fi
+		#CONFIG="/boot/userconfig.txt"
+		#if [ ! -f $CONFIG ]; then
+		#	touch $CONFIG
+		#	# Insert empty line at the end of the file, otherwise the following sed commands will fail
+		#	sed -i -e '$a\' $CONFIG
+		#fi
+		#sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i /boot/config.txt
 		
+		CONFIG="/boot/config.txt"
 		echo "Updating GPU memory to 256MB/144MB/112MB..."
 		sed '/^gpu_mem_1024=/{h;s/=.*/=256/};${x;/^$/{s//gpu_mem_1024=256/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_512=/{h;s/=.*/=144/};${x;/^$/{s//gpu_mem_512=144/;H};x}' -i $CONFIG
