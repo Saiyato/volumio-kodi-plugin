@@ -82,16 +82,13 @@ if [ ! -f $INSTALLING ]; then
 		
 		# Add input rules
 		echo "Adding input rules"
-		#wget -O /etc/udev/rules.d/99-input.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/99-input.rules
 		cp -f /data/plugins/miscellanea/kodi/policies/99-input.rules /etc/udev/rules.d/99-input.rules
 
 		# Add input permissions
 		echo "Adding input permissions"
-		#wget -O /etc/udev/rules.d/10-permissions.rules https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/10-permissions.rules
 		cp -f /data/plugins/miscellanea/kodi/policies/10-permissions.rules /etc/udev/rules.d/10-permissions.rules
 
 		# Map the EGL libraries
-		# chown root:video /dev/vchiq /dev/vcio /dev/vcsm /opt/vc/bin/tvservice
 		rm /etc/ld.so.conf.d/00-vmcs.conf
 		echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
 		ldconfig
@@ -126,11 +123,9 @@ if [ ! -f $INSTALLING ]; then
 		chown volumio:volumio /etc/asound.conf
 		
 		# Add the systemd unit
-		# wget -O /etc/systemd/system/kodi.service https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/unit/kodi.service
 		cp -f /data/plugins/miscellanea/kodi/unit/kodi.service /etc/systemd/system/kodi.service
 		echo "Added the systemd unit"
 
-		#wget -O /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/policies/50-kodi-actions.pkla
 		cp -f /data/plugins/miscellanea/kodi/policies/50-kodi-actions.pkla /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla
 		echo "Added policykit actions for kodi (access usb drives, reboot)"
 		
