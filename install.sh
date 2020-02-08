@@ -106,7 +106,8 @@ if [ ! -f $INSTALLING ]; then
 		#sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i /boot/config.txt
 		
 		CONFIG="/boot/config.txt"
-		echo "Updating GPU memory to 256MB/144MB/112MB..."
+		echo "Updating GPU memory to 256MB/144MB/112MB/32MB..."
+		sed '/^gpu_mem=/{h;s/=.*/=32/};${x;/^$/{s//gpu_mem=32/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_1024=/{h;s/=.*/=256/};${x;/^$/{s//gpu_mem_1024=256/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_512=/{h;s/=.*/=144/};${x;/^$/{s//gpu_mem_512=144/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG		

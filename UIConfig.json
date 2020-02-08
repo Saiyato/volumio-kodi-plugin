@@ -3,7 +3,7 @@
     "label": "TRANSLATE.KODI.KODICONF"
   },
   "sections": [ 
-   {
+	{
       "id": "section_bootconf",
       "element": "section",
       "label": "TRANSLATE.KODI.KODITITLE",
@@ -51,8 +51,8 @@
           "value": true
         }
       ]
-   },
-   {
+	},
+	{
       "id": "section_dacconf",
       "element": "section",
       "label": "TRANSLATE.KODI.KODISOUNDTITLE",
@@ -84,7 +84,7 @@
           "value": "0.000000"
         }
       ]
-   },
+	},
 	{
       "id": "section_optimiseconf",
       "element": "section",
