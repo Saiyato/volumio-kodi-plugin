@@ -22,8 +22,12 @@ if [ ! -f $INSTALLING ]; then
 		if [ $arch = "armv6l" ]; then
 			echo "Installation is not recommended, performance may be disappointing. Continuing nonetheless... Be sure to grab some coffee, do laundry or... (This might take a while)"
 		
-		# armv7l
+		# armv7l && Jessie
 		elif [ $arch = "armv7l" ] && [ ! $rev = "a03111" ] && [ ! $rev = "b03111" ] && [ ! $rev = "c03111" ] && [ $dist = "jessie" ]; then
+			echo "Continuing installation, this may take a while, you can grab a cup of coffee (or more)"
+		
+		# armv7l && Buster
+		elif [ $arch = "armv7l" ] && [ $dist = "buster" ]; then
 			echo "Continuing installation, this may take a while, you can grab a cup of coffee (or more)"
 		
 		# unsupported device (afaik)
