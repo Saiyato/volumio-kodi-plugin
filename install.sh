@@ -12,7 +12,7 @@ if [ ! -f $INSTALLING ]; then
 	# See table here: https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
 	rev=$(cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}')
 	
-	echo -e "Detected device information:\nOS Distribution\t\t= ${dist}\nCPU Architecture\t= ${arch}\nBoard Revision\t\t= ${rev}"
+	echo "Detected device information:\nOS Distribution\t= ${dist}\nCPU Architecture\t= ${arch}\nBoard Revision\t= ${rev}"
 
 	# Continue installation
 	if [ $? -eq 0 ]
