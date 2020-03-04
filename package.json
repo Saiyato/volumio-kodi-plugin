@@ -1,7 +1,7 @@
 {
   "name": "kodi",
-  "version": "2.2.17",
-  "description": "Installs Kodi on top of Volumio 2.x, for the moment only Krypton is supported due to the use of Debian Jessie. This means the Raspberry Pi 4 is not yet supported, since it requires Debian Buster to function.",
+  "version": "2.3.1",
+  "description": "Installs Kodi on top of Volumio 2.x, for the moment only Krypton is supported in Debian Jessie. This means the Raspberry Pi 4 is not yet supported, since it requires Debian Buster to function.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

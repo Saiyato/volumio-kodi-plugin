@@ -6,36 +6,24 @@ if [ ! -f $INSTALLING ]; then
 
 	touch $INSTALLING
 	echo "Detecting architecture"
+	dist=$(lsb_release -c | grep Codename | awk '{print $2}')
 	arch=$(lscpu | awk 'FNR == 1 {print $2}')
+	
 	# See table here: https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
 	rev=$(cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}')
-	echo "arch: " $arch
-
-	# Only add the repo if it doesn't already exist -> pipplware = Krypton 17.4 (at time of writing: 25-12-2019) and Leia 18.5 (for Buster only!)
-	if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*.list;
-	then
-		echo "deb http://pipplware.pplware.pt/pipplware/dists/jessie/main/binary /" | sudo tee -a /etc/apt/sources.list.d/pipplware.list
-		wget -O - http://pipplware.pplware.pt/pipplware/key.asc | sudo apt-key add -
-	fi
+	
+	echo -e "Detected device information:\nOS Distribution\t\t= ${dist}\nCPU Architecture\t= ${arch}\nBoard Revision\t\t= ${rev}"
 
 	# Continue installation
 	if [ $? -eq 0 ]
 	then
-		
-		# Update repositories // the echo before a while-loop in if/elif/else-conditions is needed!
-		echo "Updating package lists..."
-		while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do
-			echo "Waiting for other software managers to finish..." 
-			sleep 2
-		done
-		apt-get update
 
 		# armv6l
 		if [ $arch = "armv6l" ]; then
 			echo "Installation is not recommended, performance may be disappointing. Continuing nonetheless... Be sure to grab some coffee, do laundry or... (This might take a while)"
 		
 		# armv7l
-		elif [ $arch = "armv7l" ] && [ ! $rev = "a03111" ] && [ ! $rev = "b03111" ] && [ ! $rev = "c03111" ]; then
+		elif [ $arch = "armv7l" ] && [ ! $rev = "a03111" ] && [ ! $rev = "b03111" ] && [ ! $rev = "c03111" ] && [ $dist = "jessie" ]; then
 			echo "Continuing installation, this may take a while, you can grab a cup of coffee (or more)"
 		
 		# unsupported device (afaik)
@@ -46,6 +34,21 @@ if [ ! -f $INSTALLING ]; then
 			echo "plugininstallend"
 			exit
 		fi
+		
+		# Only add the repo if it doesn't already exist -> pipplware = Krypton 17.4 (at time of writing: 25-12-2019) and Leia 18.5 (for Buster only!)
+		if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*.list;
+		then
+			echo "deb http://pipplware.pplware.pt/pipplware/dists/${dist}/main/binary /" | sudo tee -a /etc/apt/sources.list.d/pipplware.list
+			wget -O - http://pipplware.pplware.pt/pipplware/key.asc | sudo apt-key add -
+		fi
+		
+		# Update repositories // the echo before a while-loop in if/elif/else-conditions is needed!
+		echo "Updating package lists..."
+		while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do
+			echo "Waiting for other software managers to finish..." 
+			sleep 2
+		done
+		apt-get update
 		
 		# Install Kodi and debugger
 		if [ -f "/usr/bin/kodi" ]
