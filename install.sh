@@ -98,6 +98,7 @@ if [ ! -f $INSTALLING ]; then
 		# Map the EGL libraries
 		rm /etc/ld.so.conf.d/00-vmcs.conf
 		echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
+		ln -fs /opt/vc/bin/tvservice /usr/bin/tvservice
 		ldconfig
 
 		# Update the boot config; use userconfig for forward compatibility
