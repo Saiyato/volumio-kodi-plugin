@@ -8,6 +8,7 @@ if [ ! -f $INSTALLING ]; then
 	echo "Detecting architecture"
 	dist=$(lsb_release -c | grep Codename | awk '{print $2}')
 	arch=$(lscpu | awk 'FNR == 1 {print $2}')
+	defaultPPA=0 
 	
 	# See table here: https://www.raspberrypi-spy.co.uk/2012/09/checking-your-raspberry-pi-board-version/
 	rev=$(cat /proc/cpuinfo | grep 'Revision' | awk '{print $3}')
@@ -22,13 +23,14 @@ if [ ! -f $INSTALLING ]; then
 		if [ $arch = "armv6l" ]; then
 			echo "Installation is not recommended, performance may be disappointing. Continuing nonetheless... Be sure to grab some coffee, do laundry or... (This might take a while)"
 		
-		# armv7l && Jessie
+		# armv7l && !rPi4 && Jessie distro
 		elif [ $arch = "armv7l" ] && [ ! $rev = "a03111" ] && [ ! $rev = "b03111" ] && [ ! $rev = "c03111" ] && [ $dist = "jessie" ]; then
 			echo "Continuing installation, this may take a while, you can grab a cup of coffee (or more)"
 		
-		# armv7l && Buster
-		elif [ $arch = "armv7l" ] && [ $dist = "buster" ]; then
-			echo "Continuing installation, this may take a while, you can grab a cup of coffee (or more)"
+		# Buster distro
+		elif [ $dist = "buster" ] || [ $arch = "i686" ]; then
+			echo "Installing from the default ppa, sit back and relax... this might take a few minutes"
+			defaultPPA=1
 		
 		# unsupported device (afaik)
 		else
@@ -39,8 +41,8 @@ if [ ! -f $INSTALLING ]; then
 			exit
 		fi
 		
-		# Only add the repo if it doesn't already exist -> pipplware = Krypton 17.4 (at time of writing: 25-12-2019) and Leia 18.5 (for Buster only!)
-		if ! grep -q "pipplware" /etc/apt/sources.list /etc/apt/sources.list.d/*.list;
+		# Only add the repo if it doesn't already exist && distro is Jessie -> pipplware = Krypton 17.4 (at time of writing: 25-12-2019)
+		if [ -f "/etc/apt/sources.list.d/pipplware.list" ] && [ $defaultPPA = 0 ];
 		then
 			echo "deb http://pipplware.pplware.pt/pipplware/dists/${dist}/main/binary /" | sudo tee -a /etc/apt/sources.list.d/pipplware.list
 			wget -O - http://pipplware.pplware.pt/pipplware/key.asc | sudo apt-key add -
