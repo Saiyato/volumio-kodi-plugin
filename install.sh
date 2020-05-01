@@ -101,26 +101,30 @@ if [ ! -f $INSTALLING ]; then
 		rm /etc/ld.so.conf.d/00-vmcs.conf
 		echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
 		ln -fs /opt/vc/bin/tvservice /usr/bin/tvservice
-		ldconfig
-
-		# Update the boot config; use userconfig for forward compatibility
-		#CONFIG="/boot/userconfig.txt"
-		#if [ ! -f $CONFIG ]; then
-		#	touch $CONFIG
-		#	# Insert empty line at the end of the file, otherwise the following sed commands will fail
-		#	sed -i -e '$a\' $CONFIG
-		#fi
-		#sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i /boot/config.txt
+		ldconfig		
 		
+		# Memory must be set in /boot/config.txt, because included files will not be interpreted at boot time
 		CONFIG="/boot/config.txt"
 		echo "Updating GPU memory to 256MB/144MB/112MB/32MB..."
 		sed '/^gpu_mem=/{h;s/=.*/=32/};${x;/^$/{s//gpu_mem=32/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_1024=/{h;s/=.*/=256/};${x;/^$/{s//gpu_mem_1024=256/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_512=/{h;s/=.*/=144/};${x;/^$/{s//gpu_mem_512=144/;H};x}' -i $CONFIG
-		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG		
+		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG
 		
 		echo "Setting HDMI to hotplug..."
 		sed '/^hdmi_force_hotplug=/{h;s/=.*/=1/};${x;/^$/{s//hdmi_force_hotplug=1/;H};x}' -i $CONFIG
+		
+		# include userconfig.txt in config.txt
+		sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i $CONFIG
+		
+		# Update the boot config; use userconfig for forward compatibility
+		USERCONFIG="/boot/userconfig.txt"
+		if [ ! -f $USERCONFIG ]; then
+			touch $USERCONFIG
+			# Insert empty line at the end of the file, otherwise the following sed commands will fail
+			sed -i -e '$a\' $USERCONFIG
+		fi
+		sed '/^dtoverlay=vc4-fkms-v3d/{h;s/dtoverlay=vc4-fkms-v3d.*/dtoverlay=vc4-fkms-v3d/};${x;/^$/{s//dtoverlay=vc4-fkms-v3d/;H};x}' -i $USERCONFIG
 		
 		# Create the ALSA override file
 		echo "Creating ALSA override"
@@ -139,14 +143,8 @@ if [ ! -f $INSTALLING ]; then
 		cp -f /data/plugins/miscellanea/kodi/policies/50-kodi-actions.pkla /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla
 		echo "Added policykit actions for kodi (access usb drives, reboot)"
 		
-		# Let's throw in some repo URLs
-		echo "Adding file links to easily install repos, use at your own discretion, I do not own any of these! Nor can I be held responsible in any way, the information is readily available on the internet."
-		wget -O /home/kodi/.kodi/userdata/guisettings.xml https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/kodi_configuration/guisettings.xml
-		wget -O /home/kodi/.kodi/userdata/sources.xml https://raw.githubusercontent.com/Saiyato/volumio-kodi-plugin/master/kodi_configuration/sources.xml
-		
-		chown kodi:kodi /home/kodi/.kodi/userdata/guisettings.xml
-		chmod 664 /home/kodi/.kodi/userdata/guisettings.xml
-		chown kodi:kodi /home/kodi/.kodi/userdata/sources.xml
+		# In order to write to this file, it must have the correct permissions
+		#chmod 664 /home/kodi/.kodi/userdata/guisettings.xml
 		
 		# disable the pipplware archive/ppa (don't delete it if you wanna update manually)
 		sed '/pipplware/d' -i /etc/apt/sources.list
