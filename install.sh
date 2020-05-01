@@ -130,8 +130,6 @@ if [ ! -f $INSTALLING ]; then
 		touch /etc/asound.conf
 		cat "
 #KODI
-	defaults.ctl.card ${CTL_CARD_INDEX}
-	defaults.pcm.card ${PCM_CARD_INDEX}
 #ENDOFKODI" >> /etc/asound.conf
 		chown volumio:volumio /etc/asound.conf
 		
@@ -141,10 +139,7 @@ if [ ! -f $INSTALLING ]; then
 
 		cp -f /data/plugins/miscellanea/kodi/policies/50-kodi-actions.pkla /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla
 		echo "Added policykit actions for kodi (access usb drives, reboot)"
-		
-		# In order to write to this file, it must have the correct permissions
-		#chmod 664 /home/kodi/.kodi/userdata/guisettings.xml
-		
+				
 		# disable the pipplware archive/ppa (don't delete it if you wanna update manually)
 		sed '/pipplware/d' -i /etc/apt/sources.list
 		mv /etc/apt/sources.list.d/pipplware.list /etc/apt/sources.list.d/pipplware.disabled
