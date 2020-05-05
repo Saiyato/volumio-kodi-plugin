@@ -41,11 +41,13 @@ if [ ! -f $INSTALLING ]; then
 			exit
 		fi
 		
-		# Only add the repo if it doesn't already exist && distro is Jessie -> pipplware = Krypton 17.4 (at time of writing: 25-12-2019)
-		if [ -f "/etc/apt/sources.list.d/pipplware.list" ] && [ $defaultPPA = 0 ];
-		then
+		# Only add the repo if it doesn't already exist && distro is Jessie -> pipplware = Krypton 17.4 (at time of writing: 25-12-2019), else disable APT pinning
+		if [ -f "/etc/apt/sources.list.d/pipplware.list" ] && [ $defaultPPA = 0 ]; then
 			echo "deb http://pipplware.pplware.pt/pipplware/dists/${dist}/main/binary /" | sudo tee -a /etc/apt/sources.list.d/pipplware.list
 			wget -O - http://pipplware.pplware.pt/pipplware/key.asc | sudo apt-key add -
+		else
+			# Backup (and disable) APT pinning
+			mv /etc/apt/preferences.d/raspberrypi-kernel /etc/apt/preferences.d/raspberrypi-kernel.kodi.bak
 		fi
 		
 		# Update repositories // the echo before a while-loop in if/elif/else-conditions is needed!
@@ -125,7 +127,7 @@ if [ ! -f $INSTALLING ]; then
 		fi
 		
 		# Update 3D driver for Pi4
-		if [ $arch = "armv7l" ] && [ $rev = "a03111" ] && [ $rev = "b03111" ] && [ $rev = "c03111" ]; then
+		if [ $arch = "armv7l" ] && ( [ $rev = "a03111" ] || [ $rev = "b03111" ] || [ $rev = "c03111" ] ); then
 			sed '/^dtoverlay=vc4-fkms-v3d/{h;s/dtoverlay=vc4-fkms-v3d.*/dtoverlay=vc4-fkms-v3d/};${x;/^$/{s//dtoverlay=vc4-fkms-v3d/;H};x}' -i $USERCONFIG
 		fi
 		
