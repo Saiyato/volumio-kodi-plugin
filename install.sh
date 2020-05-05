@@ -96,18 +96,22 @@ if [ ! -f $INSTALLING ]; then
 		echo "Adding input permissions"
 		cp -f /data/plugins/miscellanea/kodi/policies/10-permissions.rules /etc/udev/rules.d/10-permissions.rules
 
-		# Map the EGL libraries
-		echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
+		# Map the EGL libraries, if not done already
+		if [ ! -f  "/etc/ld.so.conf.d/00-vmcs.conf" ]; then
+			echo "/opt/vc/lib" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
+		fi
+		
+		# Link the tvservice to the working dir (needed when started as a service) and reconfigure
 		ln -fs /opt/vc/bin/tvservice /usr/bin/tvservice
 		ldconfig		
 		
 		# Memory must be set in /boot/config.txt, because included files will not be interpreted at boot time
 		CONFIG="/boot/config.txt"
-		echo "Updating GPU memory to 256MB/144MB/112MB/32MB..."
+		echo "Updating GPU memory to 32MB/112MB/144MB/320MB..."
 		sed '/^gpu_mem=/{h;s/=.*/=32/};${x;/^$/{s//gpu_mem=32/;H};x}' -i $CONFIG
-		sed '/^gpu_mem_1024=/{h;s/=.*/=320/};${x;/^$/{s//gpu_mem_1024=320/;H};x}' -i $CONFIG
+		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_512=/{h;s/=.*/=144/};${x;/^$/{s//gpu_mem_512=144/;H};x}' -i $CONFIG
-		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG		
+		sed '/^gpu_mem_1024=/{h;s/=.*/=320/};${x;/^$/{s//gpu_mem_1024=320/;H};x}' -i $CONFIG
 		
 		# include userconfig.txt in config.txt
 		sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i $CONFIG
@@ -125,7 +129,7 @@ if [ ! -f $INSTALLING ]; then
 			sed '/^dtoverlay=vc4-fkms-v3d/{h;s/dtoverlay=vc4-fkms-v3d.*/dtoverlay=vc4-fkms-v3d/};${x;/^$/{s//dtoverlay=vc4-fkms-v3d/;H};x}' -i $USERCONFIG
 		fi
 		
-		echo "Setting HDMI to hotplug..."
+		echo "Forcing HDMI output..."
 		sed '/^hdmi_force_hotplug=/{h;s/=.*/=1/};${x;/^$/{s//hdmi_force_hotplug=1/;H};x}' -i $USERCONFIG
 		
 		# Create an empty ALSA override file

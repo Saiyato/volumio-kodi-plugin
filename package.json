@@ -1,6 +1,6 @@
 {
   "name": "kodi",
-  "version": "3.0.1",
+  "version": "3.0.3",
   "description": "Installs Kodi on top of Volumio 2.x; Krypton for Jessie and Leia for Buster. Added support for Raspberry Pi 4 and x64.",
   "main": "index.js",
   "scripts": {
