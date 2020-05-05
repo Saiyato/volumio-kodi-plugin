@@ -63,7 +63,7 @@ if [ ! -f $INSTALLING ]; then
 		then
 			echo "Kodi binaries found, not installing!"
 		else
-			echo "Getting Kodi binaries..."
+			echo "Installing Kodi binaries..."
 			while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do
 			echo "Waiting for other software managers to finish..."
 				sleep 2
