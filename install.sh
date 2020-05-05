@@ -81,12 +81,12 @@ if [ ! -f $INSTALLING ]; then
 		
 		# Link to /data/configuration/miscellanea/Kodi/Configuration
 		mkdir /data/configuration/miscellanea/kodi
-		mkdir /data/configuration/miscellanea/kodi/Configuration
-		mkdir /data/configuration/miscellanea/kodi/Configuration/userdata
+		mkdir /data/configuration/miscellanea/kodi/kodi_config
+		mkdir /data/configuration/miscellanea/kodi/kodi_config/userdata
 		
-		ln -fs /data/configuration/miscellanea/kodi/Configuration /home/kodi/.kodi
-		chown kodi:kodi -R /data/configuration/miscellanea/kodi/Configuration
-		chmod -R 775 /data/configuration/miscellanea/Kodi/Configuration
+		ln -fs /data/configuration/miscellanea/kodi/kodi_config /home/kodi/.kodi
+		chown kodi:kodi -R /data/configuration/miscellanea/kodi/kodi_config
+		chmod -R 775 /data/configuration/miscellanea/kodi/kodi_config
 		
 		# Add input rules
 		echo "Adding input rules"
@@ -97,7 +97,6 @@ if [ ! -f $INSTALLING ]; then
 		cp -f /data/plugins/miscellanea/kodi/policies/10-permissions.rules /etc/udev/rules.d/10-permissions.rules
 
 		# Map the EGL libraries
-		rm /etc/ld.so.conf.d/00-vmcs.conf
 		echo "/opt/vc/lib/" | sudo tee /etc/ld.so.conf.d/00-vmcs.conf
 		ln -fs /opt/vc/bin/tvservice /usr/bin/tvservice
 		ldconfig		
@@ -108,10 +107,7 @@ if [ ! -f $INSTALLING ]; then
 		sed '/^gpu_mem=/{h;s/=.*/=32/};${x;/^$/{s//gpu_mem=32/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_1024=/{h;s/=.*/=320/};${x;/^$/{s//gpu_mem_1024=320/;H};x}' -i $CONFIG
 		sed '/^gpu_mem_512=/{h;s/=.*/=144/};${x;/^$/{s//gpu_mem_512=144/;H};x}' -i $CONFIG
-		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG
-		
-		echo "Setting HDMI to hotplug..."
-		sed '/^hdmi_force_hotplug=/{h;s/=.*/=1/};${x;/^$/{s//hdmi_force_hotplug=1/;H};x}' -i $CONFIG
+		sed '/^gpu_mem_256=/{h;s/=.*/=112/};${x;/^$/{s//gpu_mem_256=112/;H};x}' -i $CONFIG		
 		
 		# include userconfig.txt in config.txt
 		sed '/^include userconfig.txt/{h;s/=.*/NOT THERE/};${x;/^$/{s//include userconfig.txt/;H};x}' -i $CONFIG
@@ -123,9 +119,16 @@ if [ ! -f $INSTALLING ]; then
 			# Insert empty line at the end of the file, otherwise the following sed commands will fail
 			sed -i -e '$a\' $USERCONFIG
 		fi
-		sed '/^dtoverlay=vc4-fkms-v3d/{h;s/dtoverlay=vc4-fkms-v3d.*/dtoverlay=vc4-fkms-v3d/};${x;/^$/{s//dtoverlay=vc4-fkms-v3d/;H};x}' -i $USERCONFIG
 		
-		# Create the ALSA override file
+		# Update 3D driver for Pi4
+		if [ $arch = "armv7l" ] && [ $rev = "a03111" ] && [ $rev = "b03111" ] && [ $rev = "c03111" ]; then
+			sed '/^dtoverlay=vc4-fkms-v3d/{h;s/dtoverlay=vc4-fkms-v3d.*/dtoverlay=vc4-fkms-v3d/};${x;/^$/{s//dtoverlay=vc4-fkms-v3d/;H};x}' -i $USERCONFIG
+		fi
+		
+		echo "Setting HDMI to hotplug..."
+		sed '/^hdmi_force_hotplug=/{h;s/=.*/=1/};${x;/^$/{s//hdmi_force_hotplug=1/;H};x}' -i $USERCONFIG
+		
+		# Create an empty ALSA override file
 		echo "Creating ALSA override"
 		touch /etc/asound.conf
 		cat "
@@ -140,7 +143,7 @@ if [ ! -f $INSTALLING ]; then
 		cp -f /data/plugins/miscellanea/kodi/policies/50-kodi-actions.pkla /etc/polkit-1/localauthority/50-local.d/50-kodi-actions.pkla
 		echo "Added policykit actions for kodi (access usb drives, reboot)"
 				
-		# disable the pipplware archive/ppa (don't delete it if you wanna update manually)
+		# Disable the pipplware archive/PPA (don't delete it if you want to update manually from the Pipplware PPA)
 		sed '/pipplware/d' -i /etc/apt/sources.list
 		mv /etc/apt/sources.list.d/pipplware.list /etc/apt/sources.list.d/pipplware.disabled
 		# apt-key del BAA567BB
