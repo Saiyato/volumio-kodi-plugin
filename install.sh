@@ -5,8 +5,13 @@ INSTALLING="/home/volumio/kodi-plugin.installing"
 if [ ! -f $INSTALLING ]; then
 
 	touch $INSTALLING
+	# Echo version number
+	echo "## Installing Kodi v3.0.5 ##"
+	
+	
 	echo "Detecting architecture"
-	dist=$(lsb_release -c | grep Codename | awk '{print $2}')
+	# dist=$(lsb_release -c | grep Codename | awk '{print $2}') // Didn't work on x86
+	dist=$(cat /etc/os-release | grep '^VERSION=' | cut -d '(' -f2 | tr -d ')"')
 	arch=$(lscpu | awk 'FNR == 1 {print $2}')
 	defaultPPA=0 
 	

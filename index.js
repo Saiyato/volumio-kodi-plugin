@@ -1,11 +1,10 @@
 'use strict';
 
-var libQ = require('kew');
-var libNet = require('net');
-var fs = require('fs-extra');
 var config = new (require('v-conf'))();
 var exec = require('child_process').exec;
-
+var fs = require('fs-extra');
+var libNet = require('net');
+var libQ = require('kew');
 
 // Define the ControllerKodi class
 module.exports = ControllerKodi;
@@ -29,10 +28,6 @@ ControllerKodi.prototype.onVolumioStart = function()
 	this.configFile = this.commandRouter.pluginManager.getConfigurationFile(this.context, 'config.json');
 	self.getConf(this.configFile);
 	
-	// For debugging purposes
-	//self.logger.info('GPU memory: ' + self.config.get('gpu_mem'));
-	//self.logger.info("Config file: " + this.configFile);
-	
 	return libQ.resolve();	
 };
 
@@ -49,11 +44,11 @@ ControllerKodi.prototype.onStop = function() {
 
 	exec("/usr/bin/sudo /bin/systemctl stop kodi.service", {uid:1000,gid:1000}, function (error, stdout, stderr) {
 		if (error !== null) {
-			self.commandRouter.pushConsoleMessage('The following error occurred while stopping KODI: ' + error);
+			self.logger.error('The following error occurred while stopping Kodi: ' + error);
 			defer.reject();
 		}
 		else {
-			self.commandRouter.pushConsoleMessage('KODI killed');
+			self.logger.info('Stopping Kodi process...');
 			defer.resolve();
 		}
 	});
@@ -67,11 +62,11 @@ ControllerKodi.prototype.onStart = function() {
 
 	exec("/usr/bin/sudo /bin/systemctl start kodi.service", {uid:1000,gid:1000}, function (error, stdout, stderr) {
 		if (error !== null) {
-			self.commandRouter.pushConsoleMessage('The following error occurred while starting KODI: ' + error);
+			self.logger.error('The following error occurred while starting KODI: ' + error);
 			defer.reject();
 		}
 		else {
-			self.commandRouter.pushConsoleMessage('KODI started');
+			self.logger.error('Starting Kodi...');
 			defer.resolve();
 		}
 	});
@@ -296,7 +291,7 @@ ControllerKodi.prototype.updateSoundConfig = function (data)
 	return defer.promise;
 };
 
-ControllerKodi.prototype.optimiseKodi = function (data)
+ControllerKodi.prototype.updateKodiSettings = function (data)
 {
 	var self = this;
 	var defer = libQ.defer();
@@ -309,7 +304,7 @@ ControllerKodi.prototype.optimiseKodi = function (data)
 	self.config.set('kodi_webserver_password', data['kodi_webserver_password']);
 	self.logger.info("Successfully saved Kodi settings");
 	
-	self.writeKodiOptimalisation(data)
+	self.writeKodiSettings(data)
 	.fail(function(e)
 	{
 		defer.reject(new error());
@@ -348,9 +343,17 @@ ControllerKodi.prototype.writeSoundConfig = function (soundConfig)
 	var self = this;
 	var defer = libQ.defer();
 	
-	self.patchAsoundConfig(soundConfig['usedac'])	
+	let cardIndex = soundConfig['usedac'] == true ? "1" : "0";
+	let pluginName = 'KODI';
+	
+	// define the replacement dictionary
+	let replacementDictionary = [
+		{ placeholder: "${CTL_CARD_INDEX}", replacement: cardIndex },
+		{ placeholder: "${PCM_CARD_INDEX}", replacement: cardIndex }
+	];
+	
+	self.updateAsoundConfig(replacementDictionary, pluginName)	
 	.then(function (delay) {
-		//self.updateKodiConfig("audiodelay", soundConfig['audiodelay']);
 		self.xmlSed('audiodelay', soundConfig['audiodelay'], kodiSettings, false, false);
 		defer.resolve();
 	})
@@ -360,68 +363,90 @@ ControllerKodi.prototype.writeSoundConfig = function (soundConfig)
 	return defer.promise;
 };
 
-ControllerKodi.prototype.writeKodiOptimalisation = function (optimalisation)
+ControllerKodi.prototype.writeKodiSettings = function (optimalisation)
 {
 	var self = this;
-	var defer = libQ.defer();
-	var kodiSettings = '/home/kodi/.kodi/userdata/guisettings.xml';
+	var defer = libQ.defer();	
 	
 	var userDefault = false;
 	var passDefault = false;
 	
-	self.xmlSed('guisoundmode', optimalisation['kodi_gui_sounds'], kodiSettings, false, false)	
+	self.xmlSed('guisoundmode', optimalisation['kodi_gui_sounds'], false, false, false)	
 	.then(function (keepalive) {
-		self.xmlSed('streamsilence', optimalisation['kodi_audio_keepalive'], kodiSettings, false, false);
+		self.xmlSed('streamsilence', optimalisation['kodi_audio_keepalive'], false, false, false);
+		self.xmlSed('<setting id=\"audiooutput.streamsilence\" default=\"true\">', optimalisation['kodi_audio_keepalive'], true, false, true);
 	})
 	.then(function(webserverFallback) {
-		self.xmlSed('webserver[[:space:]]', optimalisation['kodi_enable_webserver'], kodiSettings, true, false);
+		self.xmlSed('webserver[[:space:]]', optimalisation['kodi_enable_webserver'], true, false, false);
 	})
 	.then(function (webserver) {
-		self.xmlSed('webserver>', optimalisation['kodi_enable_webserver'], kodiSettings, true, false);		
+		self.xmlSed('webserver>', optimalisation['kodi_enable_webserver'], true, false, false);
+		self.xmlSed('<setting id=\"services.webserver\" default=\"true\">', optimalisation['kodi_enable_webserver'], true, false, true);
 	})
 	.then(function (webserverport) {
-		self.xmlSed('webserverport', optimalisation['kodi_webserver_port'], kodiSettings, false, false);
+		self.xmlSed('webserverport', optimalisation['kodi_webserver_port'], false, false, false);
+		self.xmlSed('<setting id=\"services.webserverport\" default=\"true\">', optimalisation['kodi_webserver_port'], true, false, true);
+		console.log('port edited');
 	})
 	.then(function (webserveruser) {
 		if(webserveruser == 'kodi')
 			userDefault = true;
 			
-		self.xmlSed('webserverusername', optimalisation['kodi_webserver_username'], kodiSettings, false, userDefault);
+		self.xmlSed('webserverusername', optimalisation['kodi_webserver_username'], false, userDefault, false);
+		self.xmlSed('<setting id=\"services.webserverusername\" default=\"true\">', optimalisation['kodi_webserver_username'], true, false, true);
 	})
 	.then(function (webserverpass) {
 		if(webserverpass == '')
 			passDefault = true;
 		
-		self.xmlSed('webserverpassword', optimalisation['kodi_webserver_password'], kodiSettings, false, passDefault);
+		self.xmlSed('webserverpassword', optimalisation['kodi_webserver_password'], false, passDefault, false);
+		self.xmlSed('<setting id=\"services.webserverpassword\" default=\"true\">', optimalisation['kodi_webserver_password'], true, false, true);
 	})
 	
-	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully optimised Kodi");
+	self.commandRouter.pushToastMessage('success', "Configuration update", "Successfully edited Kodi settings");
 	
 	return defer.promise;
 };
 
-ControllerKodi.prototype.xmlSed = function (setting, value, file, booleanText, defaultAttribute)
+ControllerKodi.prototype.xmlSed = function (setting, value, booleanText, defaultAttribute, leiaSetting)
 {
 	var self = this;
 	var defer = libQ.defer();
-	var castValue;
-	var defaultAttributeText = " default=\"true\"";
+	let castValue;
+	let defaultAttributeText = " default=\"true\"";
+	let  file = '/home/kodi/.kodi/userdata/guisettings.xml';
 	
 	if((value == true || value == false) && !booleanText)
 			castValue = ~~value;
 	else
 		castValue = value;
 	
-	var command = "/bin/sed 's|<" + setting + ".*|<" + setting.replace("[[:space:]]", "").replace(">", "") + ">" + castValue + "</" + setting.replace("[[:space:]]", "").replace(">", "") + ">|g' -i " + file;
+	var command = "/bin/sed -i 's|<" + setting + ".*|<" + setting.replace("[[:space:]]", "").replace(">", "") + ">" + castValue + "</" + setting.replace("[[:space:]]", "").replace(">", "") + ">|g' " + file;
 	
 	if(defaultAttribute)
-		command = "/bin/sed 's|<" + setting + ".*|<" + setting.replace(">", "") + defaultAttributeText + ">" + castValue + "</" + setting.replace(">", "") + ">|g' -i " + file;
-		
-	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
-		if(error)
-			console.log(stderr);
-		
-		defer.resolve();
+		command = "/bin/sed -i 's|<" + setting + ".*|<" + setting.replace(">", "") + defaultAttributeText + ">" + castValue + "</" + setting.replace(">", "") + ">|g' " + file;
+	
+	if(leiaSetting)
+		command = "/bin/sed -i 's|" + setting + ".*|" + setting + castValue + "</setting>|g' " + file;
+	
+	(function(replace_inline) {		
+		exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not replace in file with error: ' + error);
+				defer.reject(new Error(error));
+			}
+		});
+	})
+	.then(function (restore_file_owner) {
+		exec("/usr/bin/sudo /bin/chown kodi:kodi /data/configuration/miscellanea/kodi/kodi_config/userdata/guisettings.xml", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not restore file permissions with error: ' + error);
+				defer.reject(new Error(error));
+			}
+		});
+		defer.resolve(restore_file_owner);
 	});
 	
 	return defer.promise;
@@ -449,80 +474,7 @@ ControllerKodi.prototype.updateConfigFile = function (setting, value, file)
 	return defer.promise;
 };
 
-ControllerKodi.prototype.patchAsoundConfig = function(useDac)
-{
-	var self = this;
-	var defer = libQ.defer();
-	var pluginName = "kodi";
-	
-	var cardIndex = useDac == true ? "1" : "0";
-	
-	// define the replacement dictionary
-	var replacementDictionary = [
-		{ placeholder: "${CTL_CARD_INDEX}", replacement: cardIndex },
-		{ placeholder: "${PCM_CARD_INDEX}", replacement: cardIndex }
-	];
-	
-	self.createAsoundConfig(pluginName, replacementDictionary)
-	.then(function (touchFile) {
-		var edefer = libQ.defer();
-		exec("/bin/touch /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
-			if(error)
-			{
-				console.log(stderr);
-				self.commandRouter.pushConsoleMessage('Could not touch config with error: ' + error);
-				self.commandRouter.pushToastMessage('error', "Configuration failed", "Failed to touch asound configuration file with error: " + error);
-				edefer.reject(new Error(error));
-			}
-			else
-				edefer.resolve();
-			
-			self.commandRouter.pushConsoleMessage('Touched asound config');
-			return edefer.promise;
-		});
-	})
-	.then(function (clear_current_asound_config) {
-		var edefer = libQ.defer();
-		exec("/bin/sed -i -- '/#" + pluginName.toUpperCase() + "/,/#ENDOF" + pluginName.toUpperCase() + "/d' /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
-			if(error)
-			{
-				console.log(stderr);
-				self.commandRouter.pushConsoleMessage('Could not clear config with error: ' + error);
-				self.commandRouter.pushToastMessage('error', "Configuration failed", "Failed to update asound configuration with error: " + error);
-				edefer.reject(new Error(error));
-			}
-			else
-				edefer.resolve();
-			
-			self.commandRouter.pushConsoleMessage('Cleared previous asound config');
-			return edefer.promise;
-		});
-	})
-	.then(function (copy_new_config) {
-		var edefer = libQ.defer();
-		var cmd = "/bin/cat " + __dirname + "/asound.section >> /etc/asound.conf";
-		fs.writeFile(__dirname + "/" + pluginName.toLowerCase() + "_asound_patch.sh", cmd, 'utf8', function (err) {
-			if (err)
-			{
-				self.commandRouter.pushConsoleMessage('Could not write the script with error: ' + err);
-				edefer.reject(new Error(err));
-			}
-			else
-				edefer.resolve();
-		});
-		
-		return edefer.promise;
-	})
-	.then(function (executeScript) {
-		self.executeShellScript(__dirname + '/' + pluginName.toLowerCase() + '_asound_patch.sh');
-		defer.resolve();
-	});
-	
-	self.commandRouter.pushToastMessage('success', "Successful push", "Successfully pushed new ALSA configuration");
-	return defer.promise;
-};
-
-ControllerKodi.prototype.createAsoundConfig = function(pluginName, replacements)
+ControllerKodi.prototype.createAsoundSection = function(pluginName, replacements)
 {
 	var self = this;
 	var defer = libQ.defer();
@@ -538,10 +490,10 @@ ControllerKodi.prototype.createAsoundConfig = function(pluginName, replacements)
 			tmpConf = tmpConf.replace(replacements[rep]["placeholder"], replacements[rep]["replacement"]);			
 		}
 			
-		fs.writeFile(__dirname + "/asound.section", tmpConf, 'utf8', function (err) {
+		fs.writeFile("/home/volumio/asound." + pluginName.toLowerCase(), tmpConf, 'utf8', function (err) {
                 if (err)
 				{
-					self.commandRouter.pushConsoleMessage('Could not write the script with error: ' + err);
+					self.logger.error('Could not write the script with error: ' + err);
                     defer.reject(new Error(err));
 				}
                 else 
@@ -552,47 +504,87 @@ ControllerKodi.prototype.createAsoundConfig = function(pluginName, replacements)
 	return defer.promise;
 };
 
-ControllerKodi.prototype.executeShellScript = function (shellScript)
+ControllerKodi.prototype.updateAsoundConfig = function(replacementDictionary, pluginName)
 {
 	var self = this;
 	var defer = libQ.defer();
-
-	var command = "/bin/sh " + shellScript;
-	self.logger.info("CMD: " + command);
 	
-	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
-		if(error)
-		{
-			console.log(stderr);
-			self.commandRouter.pushConsoleMessage('Could not execute script {' + shellScript + '} with error: ' + error);
-		}
-
-		self.commandRouter.pushConsoleMessage('Successfully executed script {' + shellScript + '}');
-		self.commandRouter.pushToastMessage('success', "Script executed", "Successfully executed script: " + shellScript);
-		defer.resolve();
+	/* [ Dictionary Array syntax ]
+	
+	var replacementDictionary = 
+	[
+		{ placeholder: "${PLACEHOLDER_1}", replacement: VALUE_1 },
+		{ placeholder: "${PLACEHOLDER_2}", replacement: VALUE_2 }
+	];	
+	
+	*/
+	
+	self.createAsoundSection(pluginName, replacementDictionary)
+	.then(function (copy_asound_config) {
+		exec("/usr/bin/rsync --ignore-missing-args /etc/asound.conf /home/volumio/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not copy config file to temp location with error: ' + error);
+				defer.reject(new Error(error));
+			}
+		});
+	})
+	.then(function (touch_asound_config) {
+		exec("/bin/touch /home/volumio/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not touch config with error: ' + error);
+				defer.reject(new Error(error));
+			}		
+		});
+	})
+	.then(function (clear_current_asound_config) {
+		exec("/bin/sed -i -- '/#" + pluginName + "/,/#ENDOF" + pluginName + "/d' /home/volumio/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not clear config with error: ' + error);
+				defer.reject(new Error(error));
+			}
+		});
+	})
+	.then(function (copy_asound_contents) {
+		exec("/bin/cat /home/volumio/asound." + pluginName.toLowerCase() + " >> /home/volumio/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not copy new config to file with error: ' + error);
+				defer.reject(new Error(error));
+			}
+		});
+	})
+	.then(function (remove_obsolete_file) {
+		exec("/bin/rm /home/volumio/asound." + pluginName.toLowerCase(), {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not copy new config to file with error: ' + error);
+				defer.reject(new Error(error));
+			}
+		});
+	})
+	.then(function (replace_asound_config) {
+		exec("/usr/bin/sudo /bin/mv /home/volumio/asound.conf /etc/asound.conf", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not replace /etc/asound.conf with error: ' + error);
+				defer.reject(new Error(error));
+			}
+		});
+	})
+	.then(function (activate_asound_config) {
+		exec("alsactl -L -R restore", {uid:1000, gid:1000}, function (error, stout, stderr) {
+			if(error)
+			{
+				self.logger.error('Could not reload asound.conf with error: ' + error);
+				defer.reject(new Error(error));
+			}
+		});
+		defer.resolve(activate_asound_config);
 	});
-
 	
-	return defer.promise;
-};
-
-ControllerKodi.prototype.updateKodiConfig = function (setting, value)
-{
-	var self = this;
-	var defer = libQ.defer();
-	var castValue;
-	
-	if(value == true || value == false)
-			castValue = ~~value;
-	else
-		castValue = value;
-	
-	var command = "/bin/sed -i -- 's|<" + setting + ".*|<" + setting + ">" + castValue + "</" + setting + ">|g' /home/kodi/.kodi/userdata/guisettings.xml";
-	
-	exec(command, {uid:1000, gid:1000}, function (error, stout, stderr) {
-		if(error)
-			console.log(stderr);
-	});
-	
+	self.commandRouter.pushToastMessage('success', "Successful push", "Successfully pushed new ALSA configuration");
 	return defer.promise;
 };

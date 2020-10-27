@@ -16,7 +16,7 @@
 	"DD_USEDAC":"If you are using a HifiBerry AMP, you need to disable the Volumio startup sound.",
 	"AUDIODELAY":"Configure sound delay (in seconds; decimal separator is a dot)",
 	"D_AUDIODELAY":"Set delay in Kodi your soundcard (e.g. Kali = 0.7s)",
-"KODI_SETTINGS":"Kodi optimalisation",
+"KODI_SETTINGS":"Kodi settings",
 	"KODI_GUI_SOUNDS":"Kodi GUI sounds",
 	"D_KODI_GUI_SOUNDS":"En- or disable Kodi GUI sounds",
 	"KODI_AUDIO_KEEPALIVE":"Have Kodi keep the audio device alive",

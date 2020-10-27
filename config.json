@@ -1,7 +1,7 @@
 {
   "gpu_mem_1024": {
     "type": "string",
-    "value": "256"
+    "value": "320"
   },
   "gpu_mem_512": {
     "type": "string",

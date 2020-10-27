@@ -86,11 +86,11 @@
       ]
 	},
 	{
-      "id": "section_optimiseconf",
+      "id": "section_kodiconf",
       "element": "section",
       "label": "TRANSLATE.KODI.KODI_SETTINGS",
       "icon": "fa-wrench",
-      "onSave": {"type":"controller", "endpoint":"miscellanea/kodi", "method":"optimiseKodi"},
+      "onSave": {"type":"controller", "endpoint":"miscellanea/kodi", "method":"updateKodiSettings"},
       "saveButton": {
         "label": "TRANSLATE.KODI.SAVE",
         "data": [
